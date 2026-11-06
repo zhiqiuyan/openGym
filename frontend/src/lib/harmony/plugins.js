@@ -34,17 +34,47 @@ export { Capacitor, registerPlugin, CapacitorHttp }
 //
 // The app never stores it anywhere else: not in the synced state, not in localStorage, not in
 // the device file next to it (lib/coach-secrets.js). On Harmony the native side keeps it in the
-// app's encrypted preferences; this shim only forwards.
+// app's preferences; this shim only forwards.
+//
+// Unlike every other Capacitor plugin, @aparajita/capacitor-secure-storage does NOT take a
+// single options object. Its contract (and the one lib/coach-secrets.js and lib/cf-access.js
+// actually call) is positional, and get() resolves with the bare value:
+//
+//   get(key)         -> string | null
+//   set(key, value)  -> void
+//   remove(key)      -> void
+//   clear()          -> void
+//   keys()           -> { keys: string[] }
+//
+// The native side, on the other hand, wants { key } / { key, value } and answers get() with
+// { value: "" } when nothing is stored. Forwarding the first argument verbatim used to send a
+// bare key string as the whole payload: the native set() had no value and refused the key,
+// and get() resolved with an object that coach-secrets.js reads as "no key". The setup screen
+// then said "The Coach is on" while every job failed with "no API key configured for …" —
+// the key never survived past the in-memory fallback. Translate both directions here.
 // ---------------------------------------------------------------------------
 
+// The native whitelist names the Cloudflare Access entry `cf.serviceToken` while
+// lib/cf-access.js asks for `cfAccess`. Keep the two sides talking without loosening the
+// native whitelist (which deliberately allows only the two secrets the app uses).
+const nativeKey = key => (key === 'cfAccess' ? 'cf.serviceToken' : String(key || ''))
+
+// { value: "" } means absent; the plugin answers null, and coach-secrets.js checks for a
+// non-empty string. Accept a bare string too, in case a native build answers that way.
+const bareValue = r => {
+  if (typeof r === 'string') return r || null
+  if (r && typeof r === 'object' && typeof r.value === 'string') return r.value || null
+  return null
+}
+
 const SecureStorage = {
-  get: (opts) => nativeCall('SecureStorage', 'get', opts),
-  set: (opts) => nativeCall('SecureStorage', 'set', opts),
-  remove: (opts) => nativeCall('SecureStorage', 'remove', opts),
-  clear: (opts) => nativeCall('SecureStorage', 'clear', opts),
-  keys: (opts) => nativeCall('SecureStorage', 'keys', opts),
-  // The app reads the plugin as `m.SecureStorage.get`, so the module itself has to carry the
-  // methods — not only the default export.
+  get: (key) => nativeCall('SecureStorage', 'get', { key: nativeKey(key) }).then(bareValue),
+  set: (key, value) => nativeCall('SecureStorage', 'set', { key: nativeKey(key), value: String(value ?? '') }).then(() => undefined),
+  remove: (key) => nativeCall('SecureStorage', 'remove', { key: nativeKey(key) }).then(() => undefined),
+  clear: () => nativeCall('SecureStorage', 'clear', {}).then(() => undefined),
+  keys: () => nativeCall('SecureStorage', 'keys', {}).then(r => (r && Array.isArray(r.keys) ? r : { keys: [] })),
+  // The app's lazy import awaits the module; a `then` on the plugin object would make it look
+  // like a thenable. Leave it explicitly undefined (core.js documents why).
   then: undefined
 }
 
