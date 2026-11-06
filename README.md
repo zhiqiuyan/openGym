@@ -31,7 +31,7 @@
 
 
 > **HarmonyOS edition / 鸿蒙版 1.0.0** — 独立版本线，包含全量简体中文动作指导与动作描述、DeepSeek AI 教练与自定义模型输入。
-> **[下载 HAP 安装包 (Releases)](https://github.com/zhiqiuyan/openGym/releases/tag/harmony-v1.0.0)** · [Release 说明与 SHA256 校验](https://github.com/zhiqiuyan/openGym/releases/tag/harmony-v1.0.0)
+> **[下载 HAP 安装包 (Releases)](https://github.com/zhiqiuyan/openGym/releases/tag/harmony-v1.0.0)** · 附件另附 `.sha256` 与 `SHA256SUMS` 校验文件。
 > HAP 为未签名包，真机安装前需在 DevEco Studio 配置签名后重新构建。
 
 ## Why openGym
