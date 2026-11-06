@@ -1,0 +1,109 @@
+# Keeps this fork's iteration in step with the upstream project.
+#
+# The fork has two long-lived branches with two different jobs (docs/UPSTREAM-SYNC.md):
+#   main    a byte-for-byte mirror of DuarteSantos8/openGym:main. Nothing is ever committed here.
+#   harmony main + the HarmonyOS edition patchset. This is the default branch and the release line.
+#
+# Every day this job fast-forwards `main` and, while upstream has commits that `harmony` does not
+# have yet, keeps one standing PR open (main -> harmony). The PR is the sync ledger: its diff is
+# exactly what upstream changed since the last merge, and its checks say whether the HarmonyOS
+# patchset still fits. Merging it with a merge commit (never a squash, never a rebase) is what
+# makes GitHub report "0 commits behind upstream" again.
+#
+# Conflicts are expected from time to time: see the re-apply list in docs/UPSTREAM-SYNC.md. The
+# job never force-pushes, never squashes and never resolves a conflict by itself. A manual run
+# with `auto_merge=true` enables GitHub auto-merge for a conflict-free PR, so the configured
+# checks still gate it.
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+    inputs:
+      auto_merge:
+        description: 'Enable auto-merge on a conflict-free sync PR'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: upstream-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    # Upstream has nothing to mirror to itself; a fork of this fork can change the guard above.
+    if: github.repository == 'zhiqiuyan/openGym'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: harmony
+          fetch-depth: 0
+
+      - name: Fetch upstream and configure git
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote add upstream https://github.com/DuarteSantos8/openGym.git
+          git fetch --no-tags upstream main
+          echo "UPSTREAM_SHA=$(git rev-parse FETCH_HEAD)" >> "$GITHUB_ENV"
+
+      - name: Fast-forward the mirror branch
+        run: |
+          # main is a pure mirror. A diverged main fails loudly instead of being overwritten.
+          git push origin "$UPSTREAM_SHA:refs/heads/main"
+
+      - name: Count the commits harmony is behind
+        id: behind
+        run: |
+          n=$(git rev-list --count "$UPSTREAM_SHA" ^HEAD)
+          echo "count=$n" >> "$GITHUB_OUTPUT"
+          echo "harmony is $n commit(s) behind upstream $UPSTREAM_SHA" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the standing sync PR up to date
+        if: steps.behind.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTO_MERGE: ${{ inputs.auto_merge }}
+        run: |
+          set -euo pipefail
+          short=$(git rev-parse --short "$UPSTREAM_SHA")
+          count=${{ steps.behind.outputs.count }}
+          {
+            echo "## Upstream sync: \`$short\`"
+            echo
+            echo "\`$count\` commit(s) on \`DuarteSantos8/openGym:main\` are not in \`harmony\` yet."
+            echo "Merge this PR with a **merge commit** (no squash, no rebase), then run the"
+            echo "version bump in \`opengym-harmony/tools/bump-version.mjs\` — see"
+            echo "[docs/UPSTREAM-SYNC.md](https://github.com/zhiqiuyan/openGym/blob/harmony/docs/UPSTREAM-SYNC.md)."
+            echo
+            echo '```'
+            git log --oneline --no-merges "HEAD..$UPSTREAM_SHA" | head -40
+            echo '```'
+          } > /tmp/pr-body.md
+
+          pr=$(gh pr list --base harmony --head main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr" ]; then
+            pr=$(gh pr create --base harmony --head main \
+              --title "Upstream sync: $short ($count commits)" \
+              --body-file /tmp/pr-body.md | tail -1)
+            echo "opened $pr" >> "$GITHUB_STEP_SUMMARY"
+          else
+            gh pr edit "$pr" --title "Upstream sync: $short ($count commits)" --body-file /tmp/pr-body.md
+            echo "refreshed PR #$pr" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [ "$AUTO_MERGE" = 'true' ]; then
+            # GitHub only completes this when the required checks pass, and refuses a conflicted PR.
+            gh pr merge "$pr" --auto --merge || echo 'auto-merge not available for this PR' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Nothing to do
+        if: steps.behind.outputs.count == '0'
+        run: echo "harmony already contains upstream $UPSTREAM_SHA" >> "$GITHUB_STEP_SUMMARY"
