@@ -27,11 +27,15 @@ GitHub 才会显示 `harmony` 与上游「0 commits behind」。
 >
 > 启用二选一：
 >
-> 1. **推荐**：浏览器打开
->    <https://github.com/zhiqiuyan/openGym/new/harmony?filename=.github/workflows/sync-upstream.yml>，
->    把 `docs/sync-upstream.yml.example` 全文粘进去，文件名保持 `.github/workflows/sync-upstream.yml`，
->    直接 Commit 到 `harmony`。Web 会话具备完整权限，不受 CLI token scope 限制。
-> 2. 给 CLI 补权限后由脚本推送：
+> 1. **推荐 / 一步完成**：浏览器打开
+>    <https://github.com/zhiqiuyan/openGym/edit/harmony/docs/sync-upstream.yml.example>，
+>    把编辑框顶部的文件路径整个替换为 `.github/workflows/sync-upstream.yml`
+>    （**内容一个字都不用改**），然后直接 Commit 到 `harmony`。GitHub 会把它当成一次移动；
+>    Web 会话具备完整权限，不受 CLI token scope 限制，也不需要复制粘贴 YAML。
+>    若该页面不接受跨目录改名，改用新建文件页
+>    <https://github.com/zhiqiuyan/openGym/new/harmony?filename=.github/workflows/sync-upstream.yml>
+>    粘贴示例全文提交，效果相同。
+> 2. 给 CLI 补权限后由脚本推送（设备码有效期约 15 分钟，需当场在浏览器输入，否则会超时）：
 >    ```bash
 >    gh auth refresh -h github.com -s workflow          # 浏览器设备授权
 >    git add .github/workflows/sync-upstream.yml
