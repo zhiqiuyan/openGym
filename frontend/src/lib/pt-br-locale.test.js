@@ -41,11 +41,11 @@ describe('Brazilian Portuguese locale', () => {
     // has to be taught is a number nobody reads. What the numbers stood for is asserted above.
     // If the hash fails, review the changed keys and wording before accepting a new one. From
     // frontend/: node scripts/pt-br-inheritance-fingerprint.mjs --list
-    // Reviewed 2026-11-05 (HarmonyOS edition): four dead "Support openGym" donation keys left
-    // pt.js, and seven About & updates / edition keys joined it. The new keys intentionally keep
-    // the English source wording in every pack but zh / zh-TW, exactly what the fallback would
-    // show, so no Brazilian wording changed; the inherited set is what moved.
-    expect(fingerprint, 'pt-PT inheritance changed; review the inherited pt-BR wording').toBe('cc8d0ac72ad88daf2e7773ce4e1aba46ac65a29de5f16d1653b8b06e5d086ac5')
+    // Re-reviewed 2026-11-06 after syncing upstream main into the HarmonyOS edition: the eight
+    // About & updates / partly-translated-steps keys joined every pack with the English source
+    // wording (pt-BR inherits them from pt), and the four dead donation strings left every
+    // pack. No Brazilian wording changed; only the inherited set moved.
+    expect(fingerprint, 'pt-PT inheritance changed; review the inherited pt-BR wording').toBe('fdf26588459e84c4aa9161d1ca887ae01e843bd282c904a25559ae011b780a78')
   })
 
   // pt-PT labelled Unpair 'Desfazer': Undo, in Portuguese (it is pt-BR's Undo), on the button that

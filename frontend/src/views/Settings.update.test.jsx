@@ -56,7 +56,7 @@ vi.mock('../lib/update.js', () => ({
   downloadAndInstall: vi.fn(),
   forgetDownloadedUpdate: (...a) => mocks.forget(...a),
 }))
-vi.mock('../lib/channel.js', () => ({ selfUpdates: () => Promise.resolve(mocks.channel === 'sideload') }))
+vi.mock('../lib/channel.js', () => ({ getChannel: () => Promise.resolve(mocks.channel), gymReminderBuilt: () => Promise.resolve(true) }))
 vi.mock('./MobileOnboarding.jsx', () => ({ ConnectSheet: () => null }))
 vi.mock('../sheets.jsx', () => ({
   starterPlanSheet: vi.fn(), confirmSheet: (...a) => mocks.confirmSheet(...a), importFromApp: vi.fn(),
@@ -191,5 +191,44 @@ describe('Settings → About: which APK this is', () => {
       await mount()
       expect(versionRow().textContent).not.toContain('APK,')
     }
+  })
+})
+
+// This edition's About page carries no donation rows at all: "free, no ads, no subscriptions,
+// no tracking" is the whole message. Upstream tests the Play/APK/web donation matrix; here the
+// same three builds must instead agree on the licence/copyright rows and the hero line.
+describe('Settings: about page instead of support links', () => {
+  const row = text => [...host.querySelectorAll('.lrow')].find(r => r.textContent.includes(text))
+  const NO_DONATIONS = ['Buy me a coffee', 'Ko-fi', 'GitHub Sponsors',
+    'Rate openGym on Google Play', 'Rate openGym on the App Store', 'Support openGym']
+  const noDonations = () => {
+    for (const text of NO_DONATIONS) expect(row(text), text).toBeUndefined()
+    expect(host.textContent).not.toContain('A coffee keeps it that way')
+  }
+  const legalRows = () => {
+    expect(row('License')).toBeTruthy()
+    expect(row('Source code')).toBeTruthy()
+    expect(row('Third-party notices')).toBeTruthy()
+    expect(host.textContent).toContain('Free: no ads, no subscriptions, no tracking.')
+  }
+  it('the APK build shows the licence rows and no donation links', async () => {
+    mocks.MOBILE = true
+    mocks.android = true
+    await mount()
+    noDonations()
+    legalRows()
+  })
+  it('the Google Play build shows the same page', async () => {
+    mocks.MOBILE = true
+    mocks.android = true
+    mocks.channel = 'play'
+    await mount()
+    noDonations()
+    legalRows()
+  })
+  it('the web build shows the same page', async () => {
+    await mount()
+    noDonations()
+    legalRows()
   })
 })

@@ -11,6 +11,7 @@ import './admin.css'
 import './coach.css'
 import './index.css'
 import { hideBoot, handOverFromLaunchScreen } from './lib/boot.js'
+import { guardFocusZoom } from './lib/viewport-zoom.js'
 // HarmonyOS has no Capacitor runtime: the phone shell is an ArkUI Web component with a native
 // bridge. The globals have to be in place before the first render — lib/platform-now.js reads
 // globalThis.Capacitor synchronously there — so this is the very first import's job. The flag
@@ -26,6 +27,9 @@ window.addEventListener('error', hideBoot, { once: true })
 handOverFromLaunchScreen()
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+
+// The web build lets people pinch to zoom; on iOS a focused small field must not zoom the page.
+if (!MOBILE) guardFocusZoom()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode><App /></StrictMode>

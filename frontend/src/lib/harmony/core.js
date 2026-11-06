@@ -108,4 +108,11 @@ export const CapacitorHttp = {
   async delete(options) { return CapacitorHttp.request({ ...options, method: 'DELETE' }) }
 }
 
-export default { Capacitor, registerPlugin, CapacitorHttp }
+// Upstream 1.4.4 added lib/system-bars.js, which destructures `SystemBars` out of
+// '@capacitor/core'. The Harmony bridge has no such plugin (the ArkUI shell owns its status
+// bar), and the app only uses it on iOS. Export the name so the aliased import resolves to a
+// falsy value instead of a Rollup "not exported" error, and the Android branch above stays the
+// one that runs here.
+export const SystemBars = null
+
+export default { Capacitor, registerPlugin, CapacitorHttp, SystemBars }
