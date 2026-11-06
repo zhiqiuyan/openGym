@@ -15,7 +15,7 @@
 
 </div>
 
-# openGym 鸿蒙版（HarmonyOS edition）
+# openGym 鸿蒙版（HarmonyOS）
 
 > 开源的健身与自重训练记录工具：规划训练计划、记录每次训练、查看各肌群的训练覆盖，并可从 Strong、Hevy、FitNotes 导入历史数据。数据可以自己托管，也可以只留在手机里独立使用。
 >
