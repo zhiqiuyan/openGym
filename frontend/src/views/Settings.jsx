@@ -69,7 +69,9 @@ const HARMONY = import.meta.env.VITE_HARMONY === '1'
 // The HarmonyOS edition points at its own repository (its own version line and update channel);
 // the upstream project keeps its attribution everywhere, see NOTICE.md.
 const EDITION_REPO = 'https://github.com/zhiqiuyan/openGym'
-const EDITION_RELEASES = EDITION_REPO + '/releases'
+// Always point at the newest published HAP. Each release gets its own harmony-vX.Y.Z tag, so a
+// pinned URL would go stale on the next version bump while this one keeps working.
+const EDITION_RELEASES = EDITION_REPO + '/releases/latest'
 const UPSTREAM_REPO = 'https://github.com/DuarteSantos8/openGym'
 const SOURCE_URL = HARMONY ? EDITION_REPO : UPSTREAM_REPO
 const LICENCE_URL = (HARMONY ? EDITION_REPO : UPSTREAM_REPO) + '/blob/main/LICENSE'

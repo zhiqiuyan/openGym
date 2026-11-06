@@ -98,13 +98,24 @@ const flavor = {
 // answer from inside the app. Unset (the ordinary case, and every upstream build) it changes
 // nothing: the string is exactly package.json's version.
 const pkgVersion = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
-// The HarmonyOS edition is a separate product with its own version line (starting at 1.0.0) and
-// its own update path — it is not an Android APK, and showing the web/Android version there made
-// Settings offer a GitHub .apk it cannot install. The number lives in the Harmony app manifest;
-// tools/sync-web.mjs reads it and passes VITE_HARMONY_VERSION, so the version shown in the app
-// can never drift from the version of the installed package.
+// The HarmonyOS edition is a separate product with its own semver line (it started at 1.0.0 and
+// iterates with patch/minor/major; see opengym-harmony/CHANGELOG.md) and its own update path —
+// it is not an Android APK, and showing the web/Android version there made Settings offer a
+// GitHub .apk it cannot install. AppScope/app.json5 is the single source of truth:
+// tools/sync-web.mjs reads it and passes VITE_HARMONY_VERSION. Fall back to reading the manifest
+// directly so an ad-hoc `VITE_HARMONY=1 vite build` cannot silently ship a stale version.
 const harmonyBuild = process.env.VITE_HARMONY === '1'
-const harmonyVersion = harmonyBuild ? (process.env.VITE_HARMONY_VERSION || '1.0.0') : null
+function harmonyManifestVersion () {
+  const manifest = new URL('../../opengym-harmony/AppScope/app.json5', import.meta.url)
+  if (!existsSync(manifest)) return null
+  const m = readFileSync(manifest, 'utf8').match(/"versionName"\s*:\s*"([^"]+)"/)
+  return m ? m[1] : null
+}
+const harmonyVersion = harmonyBuild
+  ? (process.env.VITE_HARMONY_VERSION || harmonyManifestVersion() || (() => {
+      throw new Error('鸿蒙构建缺少版本号：请用 tools/sync-web.mjs，或显式设置 VITE_HARMONY_VERSION')
+    })())
+  : null
 const appVersion = harmonyBuild
   ? harmonyVersion
   : (process.env.APP_BUILD ? `${pkgVersion}+${process.env.APP_BUILD}` : pkgVersion)
