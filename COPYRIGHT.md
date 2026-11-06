@@ -30,8 +30,9 @@ NOTICE.md and in the app's About screen.
 
 The HarmonyOS package is a separate build of the same AGPL v3.0 application,
 with its own version number and update page. It is distributed unsigned; each
-recipient signs it locally before installing. The package is not published as
-a binary release from this repository.
+recipient signs it locally before installing. Each version is attached to its
+own immutable GitHub Release (`harmony-vX.Y.Z`) as a binary asset, together
+with SHA256 checksums; binaries are never committed to the git tree.
 
 ## Exercise media — important
 
