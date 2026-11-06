@@ -33,7 +33,7 @@
 > **HarmonyOS edition / 鸿蒙版** — 独立的 semver 版本线（当前 **1.0.2**），包含全量简体/繁体中文动作指导与动作描述、DeepSeek AI 教练与自定义模型输入。
 > **[下载最新 HAP 安装包](https://github.com/zhiqiuyan/openGym/releases/latest)** · 每版有独立 tag 与 Release（`harmony-vX.Y.Z`），附件另附 `.sha256` 与 `SHA256SUMS`；[全部版本](https://github.com/zhiqiuyan/openGym/releases)。
 > HAP 为未签名包，真机安装前需在 DevEco Studio 配置签名后重新构建。
-> 本 fork 的 `main` 是上游 `main` 的纯镜像并每日自动快进，`harmony` 为发版分支；每次上游同步对应一个鸿蒙版补丁版本。规则见 [docs/UPSTREAM-SYNC.md](docs/UPSTREAM-SYNC.md)。
+> 本 fork 的 `main` 是上游 `main` 的纯镜像，`harmony` 为发版分支；每次上游同步对应一个鸿蒙版补丁版本。每日自动同步工作流已备好（当前待启用，见文档）。规则见 [docs/UPSTREAM-SYNC.md](docs/UPSTREAM-SYNC.md)。
 
 ## Why openGym
 

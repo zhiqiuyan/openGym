@@ -18,6 +18,30 @@ GitHub 才会显示 `harmony` 与上游「0 commits behind」。
 
 ## 自动同步
 
+> **启用状态（2026-11-06）**：工作流全文已随仓库保存在
+> [`docs/sync-upstream.yml.example`](sync-upstream.yml.example)，但**尚未作为真正的 Actions 工作流运行**。
+> 当前 `gh` 用的 OAuth token 只有 `repo, read:org, gist`，缺 `workflow` scope；GitHub 会拒绝任何写
+> `.github/workflows/` 的请求（git push 报 `refusing to allow an OAuth App ... without workflow scope`，
+> REST Contents / Git Data API 一律返回 404）。这只影响「每日自动」，**不影响已完成的 305 个提交同步
+> 和 `main` 镜像**；在启用前按下面「手动同步一次」即可保持进度。
+>
+> 启用二选一：
+>
+> 1. **推荐**：浏览器打开
+>    <https://github.com/zhiqiuyan/openGym/new/harmony?filename=.github/workflows/sync-upstream.yml>，
+>    把 `docs/sync-upstream.yml.example` 全文粘进去，文件名保持 `.github/workflows/sync-upstream.yml`，
+>    直接 Commit 到 `harmony`。Web 会话具备完整权限，不受 CLI token scope 限制。
+> 2. 给 CLI 补权限后由脚本推送：
+>    ```bash
+>    gh auth refresh -h github.com -s workflow          # 浏览器设备授权
+>    git add .github/workflows/sync-upstream.yml
+>    git commit -m "ci: enable daily upstream sync"
+>    git push myfork harmony
+>    ```
+>
+> 启用后到 Actions 手动 `Run workflow` 验一次：此刻 `harmony` 已含上游 `8fb98b16`，预期输出
+> `harmony already contains upstream ...`，且 `main` 与上游同 SHA。
+
 `.github/workflows/sync-upstream.yml`（只在 `zhiqiuyan/openGym` 运行）：
 
 - 每天 03:23 UTC 定时执行，也可在 Actions 里手动 `Run workflow`。
