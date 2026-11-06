@@ -11,6 +11,14 @@ import './admin.css'
 import './coach.css'
 import './index.css'
 import { hideBoot, handOverFromLaunchScreen } from './lib/boot.js'
+// HarmonyOS has no Capacitor runtime: the phone shell is an ArkUI Web component with a native
+// bridge. The globals have to be in place before the first render — lib/platform-now.js reads
+// globalThis.Capacitor synchronously there — so this is the very first import's job. The flag
+// is a build-time define, so every other build folds the whole import away.
+if (import.meta.env.VITE_HARMONY === '1') {
+  const { installHarmony } = await import('./lib/harmony/index.js')
+  installHarmony()
+}
 
 // App.jsx restores per-route scroll itself; the browser's own attempt races it.
 // A script that dies before the app draws would otherwise leave the boot logo lifting forever.

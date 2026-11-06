@@ -15,6 +15,10 @@ import { INSTR_LANGS, EXERCISE_NAME_LANGS } from './catalogue-langs.js'
 export { INSTR_LANGS, EXERCISE_NAME_LANGS }
 // Languages rendered right-to-left; i18n.js setLang applies the direction from this.
 export const RTL_LANGS = new Set(['ar'])
+// The Chinese packs. Their exercise names are the established terms in Chinese, so the
+// English original in brackets is noise rather than context, and the mixed script makes a
+// long list of names hard to scan.
+export const CJK_LANGS = new Set(['zh', 'zh-TW'])
 export const DATE_LOCALES = {
   en: 'en-GB', de: 'de-DE', 'de-CH': 'de-CH', es: 'es-ES', fr: 'fr-FR', it: 'it-IT',
   pt: 'pt-PT', 'pt-BR': 'pt-BR',
@@ -166,6 +170,23 @@ export const instrFor = ex => {
 
 // Whether the steps instrFor shows are in the current language rather than the English fallback.
 export const instrTranslated = ex => !!(instr && ex && instr[ex.id])
+
+// Whether some of the steps are still in English. A pack may translate the steps it has
+// and leave the rest alone: a list half in the reader's language is more use than one in
+// English from the top, so the screen says so rather than claiming the list is translated.
+//
+// The check is on the text itself, not on a comparison with the English list: the English
+// steps are loaded lazily, so they may not be there yet, and a step can be untranslated
+// even when the list it belongs to is.
+export const instrPartial = ex => {
+  const own = instr && ex && instr[ex.id]
+  if (!own) return false
+  // Han characters mark a step as translated. A pack in a script without them (Arabic,
+  // Cyrillic) is never partial: it either has the steps or it does not.
+  const han = /[㐀-鿿]/
+  if (!own.some((s) => han.test(s))) return false
+  return own.some((s) => !han.test(s))
+}
 
 // A sentence or two on what the exercise is, in the current language when someone has written
 // it, otherwise in English. Empty for exercises nobody has described yet and for custom ones.

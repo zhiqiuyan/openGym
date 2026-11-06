@@ -20,7 +20,7 @@ import { queueOf } from '../lib/queue.js'
 import { api, webauthnOK, passkeyRegister, passkeyError, IS_ANDROID } from '../lib/api.js'
 import { pushSupported, enablePush, disablePush, sendTestPush, syncPushSubscription } from '../lib/push.js'
 import { wakeLockSupported } from '../lib/wakelock.js'
-import { t, tn, LANGS, INSTR_LANGS, EXERCISE_NAME_LANGS, baseLang, dateLocale } from '../lib/i18n.js'
+import { t, tn, LANGS, INSTR_LANGS, EXERCISE_NAME_LANGS, baseLang, dateLocale, CJK_LANGS } from '../lib/i18n.js'
 import { effectiveLang } from '../lib/default-lang.js'
 import { DEMO, REPO } from '../lib/demo.js'
 import { MOBILE, isAndroid, shareExport, shareExportBlob, syncReminder } from '../lib/mobile.js'
@@ -60,6 +60,20 @@ import { csvExportSheet } from '../components/CsvExportSheet.jsx'
 import GymReminderPage, { GymEditPage } from './GymReminder.jsx'
 import { readGymConfig } from '../lib/gym-reminder.js'
 import { THEMES, inSeason, seasonChoice, activeSeason } from '../lib/seasonal.js'
+
+// The HarmonyOS edition is its own product: it reports the version from AppScope/app.json5 and
+// is updated through its own distribution, never through the GitHub APK feed (lib/channel.js).
+const HARMONY = import.meta.env.VITE_HARMONY === '1'
+
+// Distribution and legal pointers for the About page, in one place so a fork only edits these.
+// The HarmonyOS edition points at its own repository (its own version line and update channel);
+// the upstream project keeps its attribution everywhere, see NOTICE.md.
+const EDITION_REPO = 'https://github.com/zhiqiuyan/openGym'
+const EDITION_RELEASES = EDITION_REPO + '/releases'
+const UPSTREAM_REPO = 'https://github.com/DuarteSantos8/openGym'
+const SOURCE_URL = HARMONY ? EDITION_REPO : UPSTREAM_REPO
+const LICENCE_URL = (HARMONY ? EDITION_REPO : UPSTREAM_REPO) + '/blob/main/LICENSE'
+const NOTICES_URL = (HARMONY ? EDITION_REPO : UPSTREAM_REPO) + '/blob/main/NOTICE.md'
 
 /* Settings (v1.3.11). The root is one screen: an account card, eleven rows that each open a page
    (/settings/<page>), and a search over every row. Rare things live one level further down
@@ -748,7 +762,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {ctx.nameLang && <>
           <Row icon="globe" iconTint="var(--purple)" title={t('English exercise names')}
             subtitle={t('Show the English name in parentheses next to the translated one.')}>
-            <Switch checked={S.enParens?.[baseLang(lang)] ?? true}
+            <Switch checked={S.enParens?.[baseLang(lang)] ?? !CJK_LANGS.has(baseLang(lang))}
               disabled={S.enOnly?.[baseLang(lang)] === true}
               onChange={v => update(s => { s.enParens = { ...(s.enParens || {}), [baseLang(lang)]: v } })} />
           </Row>
@@ -948,37 +962,53 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     </>,
 
     about: () => <>
-      {/* Updates. On Android the row is always there: it checks on demand and installs when a
-          release is newer (checksum verified, see onUpdateRowClick). On the web the app updates
-          with its server, so the row points at the APK for the phone instead. iOS and the Google
-          Play build are updated by their store. */}
-      <Section footer={MOBILE ? (selfUpdate ? t('Releases are checked on GitHub. The download is verified against its checksum before the installer opens.') : null) : t('The web app updates together with your server. The Android app installs its own updates from here.')}>
-        {/* The sideloaded APK comes in three kinds that differ only in the animations built in
-            (lib/apk-variant.js): which one this is, so nobody has to guess from the file size. */}
+      {/* About & updates. The identity block has no surface of its own: on a light theme the
+          inset groups already sit flush with --bg, so a filled hero would read as one more
+          floating card. Everything below uses the same Section/Row primitive as the rest of
+          Settings, and every outbound link is a real tap target with noopener. */}
+      <div className="about-hero">
+        <span className="about-hero-mark"><Icon name="dumbbell" /></span>
+        <div className="about-hero-name">openGym</div>
+        {HARMONY && <div className="about-hero-badge">{t('HarmonyOS edition')}</div>}
+        <div className="about-hero-version">v{__APP_VERSION__}</div>
+        <div className="about-hero-free">{t('Free: no ads, no subscriptions, no tracking.')}</div>
+      </div>
+
+      <Section footer={HARMONY
+        ? t('This HarmonyOS edition has its own version line and update channel, separate from the Android APK.')
+        : MOBILE
+          ? (selfUpdate ? t('Releases are checked on GitHub. The download is verified against its checksum before the installer opens.') : null)
+          : t('The web app updates together with your server. The Android app installs its own updates from here.')}>
+        {/* The Harmony edition has no APK variant; its version comes from AppScope/app.json5
+            and its updates from its own release page, never the GitHub APK feed. */}
         <Row icon="info" iconTint="var(--grey)" title={t('Version')} value={'v' + __APP_VERSION__}
-          subtitle={MOBILE && selfUpdate ? t('{0} APK, animations at {1} px', VARIANT_NAMES[APK_VARIANT], BUILTIN_PX) : undefined} />
-        {MOBILE
-          ? selfUpdate && <Row icon="download" iconTint="var(--green)"
-              title={updateInfo?.hasUpdate ? t('Update to openGym v{0}', updateInfo.latestVersion) : t('Check for updates')}
-              subtitle={checking ? t('Checking…') : t('You have v{0}', __APP_VERSION__)}
-              accessory="chevron"
-              onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
-          : <Row icon="download" iconTint="var(--green)" title={t('Get the Android app')}
-              subtitle={t('Download the APK from opengym.ch')} accessory="chevron"
-              onClick={() => window.open('https://opengym.ch/#download', '_blank', 'noopener')} />}
+          subtitle={HARMONY ? t('HarmonyOS edition') : (MOBILE && selfUpdate ? t('{0} APK, animations at {1} px', VARIANT_NAMES[APK_VARIANT], BUILTIN_PX) : undefined)} />
+        {HARMONY
+          ? <Row icon="download" iconTint="var(--green)" title={t('Check for updates')}
+              subtitle={t('Open the release page of this edition')} accessory="chevron"
+              onClick={() => window.open(EDITION_RELEASES, '_blank', 'noopener')} />
+          : MOBILE
+            ? selfUpdate && <Row icon="download" iconTint="var(--green)"
+                title={updateInfo?.hasUpdate ? t('Update to openGym v{0}', updateInfo.latestVersion) : t('Check for updates')}
+                subtitle={checking ? t('Checking…') : t('You have v{0}', __APP_VERSION__)}
+                accessory="chevron"
+                onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
+            : <Row icon="download" iconTint="var(--green)" title={t('Get the Android app')}
+                subtitle={t('Download the APK from opengym.ch')} accessory="chevron"
+                onClick={() => window.open('https://opengym.ch/#download', '_blank', 'noopener')} />}
       </Section>
-      {/* Support: the project's own donation pages, and on the iPhone a straight line to writing a
-          review. Plain links, no pop-up asking for anything (App Store 5.6.1). */}
-      <Section title={t('Support openGym')} footer={t('openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.')}>
-        {MOBILE && ios && <Row icon="star" iconTint="var(--orange)" title={t('Rate openGym on the App Store')} accessory="chevron"
-          onClick={() => window.open('https://apps.apple.com/app/id6822275400?action=write-review', '_blank', 'noopener')} />}
-        <Row icon="heart" iconTint="var(--pink)" title={t('Buy me a coffee')} subtitle="Buy Me a Coffee" accessory="chevron"
-          onClick={() => window.open('https://buymeacoffee.com/duartesantos', '_blank', 'noopener')} />
-        <Row icon="heart" iconTint="var(--blue)" title="Ko-fi" accessory="chevron"
-          onClick={() => window.open('https://ko-fi.com/opengym', '_blank', 'noopener')} />
-        <Row icon="heart" iconTint="var(--purple)" title="GitHub Sponsors" accessory="chevron"
-          onClick={() => window.open('https://github.com/sponsors/DuarteSantos8', '_blank', 'noopener')} />
+
+      {/* AGPL v3 wants the licence and the corresponding source offered to whoever receives a
+          build; the media licence wants its attribution reproduced (NOTICE.md, agreement §8c). */}
+      <Section title={t('Copyright & licence')}>
+        <Row icon="shield" iconTint="var(--indigo)" title={t('License')} value="GNU AGPL v3.0"
+          accessory="chevron" onClick={() => window.open(LICENCE_URL, '_blank', 'noopener')} />
+        <Row icon="link" iconTint="var(--blue)" title={t('Source code')} accessory="chevron"
+          onClick={() => window.open(SOURCE_URL, '_blank', 'noopener')} />
+        <Row icon="note" iconTint="var(--teal)" title={t('Third-party notices')} accessory="chevron"
+          onClick={() => window.open(NOTICES_URL, '_blank', 'noopener')} />
       </Section>
+
       {/* "Add to Home screen": not inside the phone app, and not once it is installed. Safari's
           Share menu only on Apple (an iPad says Macintosh too); Windows and Linux get Chrome's
           install icon instead of an iPhone tip. */}
@@ -987,15 +1017,15 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           title={IS_ANDROID ? t('In Chrome: ⋮ menu → Add to Home screen') : APPLE_UA ? t('In Safari: Share → Add to Home Screen') : t('In Chrome or Edge: the install icon in the address bar')}
           subtitle={t('to install openGym as a full-screen app.') + ' ' + (user ? t('Your data syncs with your profile. Sign in anywhere and it’s there.') : t('Guest data stays on this device, so export a backup now and then!'))} />
       </Section>}
-      {/* The version, where the support template tells people to look for it. On the phone
-          build there is no address bar and no about box, so without this there is no way to tell
-          which build you are running, or whether an update actually installed. */}
-      <div className="dim small sp-version">
-        openGym v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
-        <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">{t('Source code')}</a><br />
-        {/* Attribution the media licence asks for word for word (agreement §8c), so it is not translated */}
-        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>, gymvisual.com.
-        Media licensed for use in openGym only; see <a href="https://github.com/DuarteSantos8/openGym/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE.md</a>
+
+      {/* Legal lines stay in English on purpose: the licence and the media agreement ask for
+          these notices word for word. The translated UI labels above cover the rest. */}
+      <div className="small sp-version about-legal">
+        <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">{t('Source code')}</a> · {t('free & open source (AGPL v3)')}<br />
+        openGym — Copyright (C) 2026 Duarte Santos.<br />
+        HarmonyOS edition — adaptations Copyright (C) 2026 openGym HarmonyOS contributors.<br />
+        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener noreferrer">Gym visual</a>, gymvisual.com.
+        Media licensed for use in openGym only; see <a href={NOTICES_URL} target="_blank" rel="noopener noreferrer">NOTICE.md</a>
       </div>
     </>,
 
@@ -1069,7 +1099,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
   /* ---------------- a page ---------------- */
   if (page && pages[page]) {
     const parent = PAGES[page].parent
-    return <div className="narrow" ref={body}>
+    return <div className="narrow sp-page" ref={body}>
       <div className="sp-nav">
         {/* Named by what it says ("Settings", "Workout"), so a voice command for the visible
             word finds it; the chevron is hidden from assistive tech. */}

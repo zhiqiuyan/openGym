@@ -76,10 +76,14 @@
   --surface-2: #ececef;
   --surface-3: #e3e3e8;
 
+  /* Apple's stock opacities (.60/.30/.16) were tuned for larger iOS labels. Here the text that
+     uses them is 13px on white: .60 measured 3.4:1 and .30 measured 1.7:1, both well under the
+     4.5:1 AA bar — the section footers and the about-page credits washed out on a light theme.
+     Darker inks keep the three steps of the hierarchy while putting body copy back above AA. */
   --label:     #000000;
-  --label-2:   rgba(60,60,67,.60);
-  --label-3:   rgba(60,60,67,.30);
-  --label-4:   rgba(60,60,67,.16);
+  --label-2:   rgba(60,60,67,.78);
+  --label-3:   rgba(60,60,67,.60);
+  --label-4:   rgba(60,60,67,.38);
 
   --sep:       rgba(60,60,67,.29);
   --sep-op:    rgba(60,60,67,.20);
@@ -2269,6 +2273,30 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .sp-acct .lrow-t{font-size:19px;font-weight:600}
 .sp-avatar.on{background:var(--acc-soft);color:var(--acc);font-size:24px;font-weight:700}
 .sp-version{text-align:center;margin-top:4px;line-height:1.6}
+/* In light mode the sub-page cards sit flush with the page background, so the
+   white inset groups don't float on the grey backdrop as a row of islands. */
+:root[data-theme="light"] .sp-page .sect-b{background:var(--bg) !important}
+/* The about-page version and licence line is 13px .dim text the user is asked to quote in bug
+   reports. It takes the readable ink rather than the tertiary one on a light background. */
+:root[data-theme="light"] .sp-version{color:var(--label-2)}
+
+/* About & updates — the identity block deliberately carries no surface and no shadow. On a
+   light theme the inset groups already sit flush with --bg, so a filled hero would read as
+   another floating card; the accent-tinted mark is an icon, not a tile. */
+.about-hero{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:6px 12px 24px;gap:5px;background:transparent}
+.about-hero-mark{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;
+  margin-bottom:5px;background:var(--acc-soft);color:var(--acc)}
+.about-hero-mark svg{width:34px;height:34px}
+.about-hero-name{font-size:25px;font-weight:700;letter-spacing:-.024em;color:var(--label)}
+.about-hero-badge{font-size:12px;font-weight:600;color:var(--acc);background:var(--acc-soft);
+  border-radius:999px;padding:3px 11px}
+.about-hero-version{font-size:13px;color:var(--label-2)}
+.about-hero-free{margin-top:7px;font-size:14px;font-weight:600;line-height:1.5;color:var(--label)}
+.about-legal{margin-top:20px;padding:0 10px;font-size:12px;line-height:1.7;
+  color:var(--label-2);text-align:center}
+.about-legal a{color:var(--acc)}
+:root[data-theme="light"] .about-legal{color:var(--label-2)}
 /* The root rows' previews ("2:00 de descanso · Tarjetas", "Som · Vibração") are two or three facts, and a
    one-line ellipsis cut all but the first. They wrap instead, up to three lines, and never below
    their longest word (min-content, since overflow:hidden would make auto mean 0). On the narrowest phones there is no room beside

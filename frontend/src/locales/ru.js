@@ -1,5 +1,13 @@
 // Russian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'Подтвердить',
   'Cancel': 'Отмена',
   'Press back again to exit': 'Нажмите «Назад» ещё раз, чтобы выйти',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'Добавить в мой план',
   'How to': 'Техника выполнения',
   'instructions in English': 'инструкции на английском',
+  'some steps in English': 'некоторые шаги на английском',
   'New routine': 'Новая программа',
   'Add “{0}”': 'Добавить «{0}»',
   '“{0}” added to {1}': '«{0}» добавлено в {1}',
@@ -2479,10 +2488,6 @@ export default {
   'A day off before the next one': 'Выходной перед следующей',
   'Already in the loop: adds it again': 'Уже в цикле: добавится ещё раз',
   'Rest day. The loop goes on {0}.': 'День отдыха. Цикл продолжится {0}.',
-  'Support openGym': 'Поддержать openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym бесплатный: без рекламы, подписок и слежки. Чашка кофе помогает так и оставаться.',
-  'Rate openGym on the App Store': 'Оценить openGym в App Store',
-  'Buy me a coffee': 'Угостить кофе',
   'Export as spreadsheet (CSV)': 'Экспорт в таблицу (CSV)',
   'Workouts, body weight and measurements': 'Тренировки, вес тела и замеры',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Одна строка на подход: для Excel, Sheets, тренера или другого приложения. openGym тоже умеет прочитать её обратно.',

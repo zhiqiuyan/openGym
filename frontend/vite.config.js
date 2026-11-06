@@ -98,12 +98,38 @@ const flavor = {
 // answer from inside the app. Unset (the ordinary case, and every upstream build) it changes
 // nothing: the string is exactly package.json's version.
 const pkgVersion = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
-const appVersion = process.env.APP_BUILD ? `${pkgVersion}+${process.env.APP_BUILD}` : pkgVersion
+// The HarmonyOS edition is a separate product with its own version line (starting at 1.0.0) and
+// its own update path — it is not an Android APK, and showing the web/Android version there made
+// Settings offer a GitHub .apk it cannot install. The number lives in the Harmony app manifest;
+// tools/sync-web.mjs reads it and passes VITE_HARMONY_VERSION, so the version shown in the app
+// can never drift from the version of the installed package.
+const harmonyBuild = process.env.VITE_HARMONY === '1'
+const harmonyVersion = harmonyBuild ? (process.env.VITE_HARMONY_VERSION || '1.0.0') : null
+const appVersion = harmonyBuild
+  ? harmonyVersion
+  : (process.env.APP_BUILD ? `${pkgVersion}+${process.env.APP_BUILD}` : pkgVersion)
+
+// The HarmonyOS build. HarmonyOS NEXT has no Capacitor runtime, so the phone shell is an
+// ArkUI Web component with a native bridge instead. With VITE_HARMONY=1 the Capacitor imports
+// resolve to src/lib/harmony/ — the same API, answered by the native side. Every other build
+// (web, Android, iOS) is untouched: the alias only exists when the flag is set.
+const harmony = harmonyBuild
+const harmonyAlias = {
+  '@capacitor/core': resolve(fileURLToPath(new URL('./src/lib/harmony/core.js', import.meta.url))),
+  '@capacitor/filesystem': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url))),
+  '@capacitor/local-notifications': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url))),
+  '@capacitor/app': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url))),
+  '@capacitor/share': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url))),
+  '@capacitor/splash-screen': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url))),
+  '@capacitor-mlkit/barcode-scanning': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url))),
+  '@aparajita/capacitor-secure-storage': resolve(fileURLToPath(new URL('./src/lib/harmony/plugins.js', import.meta.url)))
+}
 
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(appVersion) },
   plugins: [react(), umami, flavor, swStamp, catalogueMedia],
   base: './',
+  resolve: harmony ? { alias: harmonyAlias } : {},
   server: {
     // The Coach's core (payload, validator, prompts, HTTP adapters) lives in ../api/coach/core
     // and is imported by the phone build. vite build and vitest already reach it; the dev

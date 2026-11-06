@@ -1,5 +1,13 @@
 // Thai UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   // --- generic ---
   'Confirm': 'ยืนยัน',
   'Cancel': 'ยกเลิก',
@@ -81,6 +89,7 @@ export default {
   'Add to my plan': 'เพิ่มเข้าแผนของฉัน',
   'How to': 'วิธีทำ',
   'instructions in English': 'คำแนะนำเป็นภาษาอังกฤษ',
+  'some steps in English': 'บางขั้นตอนเป็นภาษาอังกฤษ',
   'New routine': 'รูทีนใหม่',
   'Add “{0}”': 'เพิ่ม “{0}”',
   '“{0}” added to {1}': 'เพิ่ม “{0}” เข้า {1} แล้ว',
@@ -2486,10 +2495,6 @@ export default {
   'A day off before the next one': 'หยุดหนึ่งวันก่อนรายการถัดไป',
   'Already in the loop: adds it again': 'อยู่ในรอบแล้ว: เพิ่มอีกครั้ง',
   'Rest day. The loop goes on {0}.': 'วันพัก รอบจะเริ่มต่อ {0}',
-  'Support openGym': 'สนับสนุน openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym ใช้ฟรี: ไม่มีโฆษณา ไม่มีสมาชิกรายเดือน ไม่มีการติดตาม กาแฟสักแก้วช่วยให้เป็นแบบนี้ต่อไป',
-  'Rate openGym on the App Store': 'ให้คะแนน openGym ใน App Store',
-  'Buy me a coffee': 'เลี้ยงกาแฟสักแก้ว',
   'Export as spreadsheet (CSV)': 'ส่งออกเป็นสเปรดชีต (CSV)',
   'Workouts, body weight and measurements': 'การออกกำลังกาย น้ำหนักตัว และสัดส่วน',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'หนึ่งแถวต่อเซ็ต สำหรับ Excel, Sheets, โค้ชของคุณ หรือแอปอื่น openGym ก็อ่านกลับได้เหมือนกัน',

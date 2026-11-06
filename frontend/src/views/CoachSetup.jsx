@@ -209,10 +209,12 @@ export default function CoachSetup() {
 
       {models && <Section title={t('Model')}>
         <div style={{ padding: '8px 12px' }}>
-          <select className="input" value={model} disabled={busy} onChange={e => setModel(e.target.value)} style={{ width: '100%' }}>
-            <option value="">{meta.defaultModel ? `(${meta.defaultModel})` : t('Pick a model')}</option>
-            {models.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
+          <TextField list="coach-models" value={model} disabled={busy} autoCapitalize="none" autoCorrect="off"
+            placeholder={meta.defaultModel ? `(${meta.defaultModel})` : t('Pick a model')} style={{ width: '100%' }}
+            onChange={e => setModel(e.target.value)} />
+          <datalist id="coach-models">
+            {models.map(m => <option key={m} value={m} />)}
+          </datalist>
         </div>
       </Section>}
 

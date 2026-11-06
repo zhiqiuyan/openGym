@@ -33,6 +33,15 @@ export const HTTP_PROVIDERS = Object.freeze({
     defaultModel: 'gemini-3.8-flash',
     keyPlaceholder: 'AIza… or AQ.…'
   }),
+  // DeepSeek — OpenAI-compatible Chat Completions at a fixed base URL. deepseek-chat is the
+  // general model; deepseek-reasoner is the reasoning one (and refuses temperature/JSON mode).
+  deepseek: Object.freeze({
+    label: 'DeepSeek', runtime: 'HTTPS', http: true,
+    apiKeyEnv: 'DEEPSEEK_API_KEY', oauthEnv: null,
+    defaultBase: 'https://api.deepseek.com',
+    defaultModel: 'deepseek-chat',
+    keyPlaceholder: 'sk-…'
+  }),
   // Ollama, LM Studio, vLLM, OpenRouter, a corporate gateway: anything that serves the
   // Chat Completions shape. The base URL is the whole configuration; a key is optional
   // because a model on your own LAN usually has none.

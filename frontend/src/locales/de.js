@@ -1,5 +1,13 @@
 // German UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   // --- generic ---
   'Confirm': 'Bestätigen',
   'Cancel': 'Abbrechen',
@@ -84,6 +92,7 @@ export default {
   'Add to my plan': 'Zu meinem Plan',
   'How to': 'Ausführung',
   'instructions in English': 'Anleitung auf Englisch',
+  'some steps in English': 'Einige Schritte auf Englisch',
   'New routine': 'Neue Routine',
   'Add “{0}”': '„{0}“ hinzufügen',
   '“{0}” added to {1}': '„{0}“ zu {1} hinzugefügt',
@@ -2495,10 +2504,6 @@ export default {
   'A day off before the next one': 'Ein freier Tag vor dem nächsten',
   'Already in the loop: adds it again': 'Schon in der Schleife: kommt nochmal dazu',
   'Rest day. The loop goes on {0}.': 'Pausentag. Die Schleife geht {0} weiter.',
-  'Support openGym': 'openGym unterstützen',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym ist gratis: keine Werbung, kein Abo, kein Tracking. Ein Kaffee hält das so.',
-  'Rate openGym on the App Store': 'openGym im App Store bewerten',
-  'Buy me a coffee': 'Spendier mir einen Kaffee',
   'Export as spreadsheet (CSV)': 'Als Tabelle exportieren (CSV)',
   'Workouts, body weight and measurements': 'Workouts, Körpergewicht und Maße',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Eine Zeile pro Satz, für Excel, Sheets, deinen Coach oder eine andere App. openGym liest sie auch wieder ein.',

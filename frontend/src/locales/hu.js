@@ -1,5 +1,13 @@
 // Hungarian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   // --- generic ---
   'Confirm': 'Megerősítés',
   'Cancel': 'Mégse',
@@ -81,6 +89,7 @@ export default {
   'Add to my plan': 'Hozzáadás a tervemhez',
   'How to': 'Végrehajtás',
   'instructions in English': 'az utasítások angolul',
+  'some steps in English': 'néhány lépés angolul',
   'New routine': 'Új rutin',
   'Add “{0}”': '„{0}” hozzáadása',
   '“{0}” added to {1}': '„{0}” hozzáadva ehhez: {1}',
@@ -2478,10 +2487,6 @@ export default {
   'A day off before the next one': 'Egy pihenőnap a következő előtt',
   'Already in the loop: adds it again': 'Már benne van a körben: még egyszer hozzáadja',
   'Rest day. The loop goes on {0}.': 'Pihenőnap. A kör {0} folytatódik.',
-  'Support openGym': 'Támogasd az openGymet',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'Az openGym ingyenes: nincs reklám, előfizetés vagy követés. Egy kávé segít, hogy így maradjon.',
-  'Rate openGym on the App Store': 'Értékeld az openGymet az App Store-ban',
-  'Buy me a coffee': 'Hívj meg egy kávéra',
   'Export as spreadsheet (CSV)': 'Exportálás táblázatként (CSV)',
   'Workouts, body weight and measurements': 'Edzések, testsúly és testméretek',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Szériánként egy sor, Excelhez, Sheetshez, az edződnek vagy egy másik appnak. Az openGym is vissza tudja olvasni.',

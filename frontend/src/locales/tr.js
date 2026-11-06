@@ -1,5 +1,13 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'Onayla',
   'Cancel': 'İptal',
   'Press back again to exit': 'Çıkmak için geri tuşuna tekrar basın',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'Planıma ekle',
   'How to': 'Nasıl yapılır',
   'instructions in English': 'talimatlar İngilizce',
+  'some steps in English': 'bazı adımlar İngilizce',
   'New routine': 'Yeni rutin',
   'Add “{0}”': '“{0}” ekle',
   '“{0}” added to {1}': '“{0}”, {1} planına eklendi',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': 'Sıradakinden önce bir gün izin',
   'Already in the loop: adds it again': 'Zaten döngüde: bir kez daha ekler',
   'Rest day. The loop goes on {0}.': 'Dinlenme günü. Döngü {0} devam ediyor.',
-  'Support openGym': 'openGym\'i destekle',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym ücretsiz: reklam yok, abonelik yok, takip yok. Bir kahve bunu böyle tutar.',
-  'Rate openGym on the App Store': 'openGym\'i App Store\'da değerlendir',
-  'Buy me a coffee': 'Bana bir kahve ısmarla',
   'Export as spreadsheet (CSV)': 'Tablo olarak dışa aktar (CSV)',
   'Workouts, body weight and measurements': 'Antrenmanlar, vücut ağırlığı ve ölçüler',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Set başına bir satır; Excel, Sheets, koçun ya da başka bir uygulama için. openGym da geri okuyabilir.',

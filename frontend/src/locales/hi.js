@@ -1,5 +1,13 @@
 // Hindi UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'पुष्टि करें',
   'Cancel': 'रद्द करें',
   'Press back again to exit': 'बाहर निकलने के लिए फिर से बैक दबाएँ',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'मेरी योजना में जोड़ें',
   'How to': 'कैसे करें',
   'instructions in English': 'निर्देश अंग्रेज़ी में',
+  'some steps in English': 'कुछ चरण अंग्रेज़ी में',
   'New routine': 'नया रूटीन',
   'Add “{0}”': '"{0}" जोड़ें',
   '“{0}” added to {1}': '"{0}" को {1} में जोड़ा गया',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': 'अगले से पहले एक दिन की छुट्टी',
   'Already in the loop: adds it again': 'लूप में पहले से है: फिर से जोड़ेगा',
   'Rest day. The loop goes on {0}.': 'आराम का दिन। लूप {0} को आगे बढ़ेगा।',
-  'Support openGym': 'openGym को सपोर्ट करें',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym मुफ़्त है: न विज्ञापन, न सब्सक्रिप्शन, न ट्रैकिंग। एक कॉफ़ी इसे ऐसा ही बनाए रखती है।',
-  'Rate openGym on the App Store': 'App Store पर openGym को रेट करें',
-  'Buy me a coffee': 'मुझे एक कॉफ़ी पिलाएँ',
   'Export as spreadsheet (CSV)': 'स्प्रेडशीट के रूप में एक्सपोर्ट करें (CSV)',
   'Workouts, body weight and measurements': 'वर्कआउट, शरीर का वज़न और माप',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'हर सेट की एक पंक्ति, Excel, Sheets, आपके कोच या किसी दूसरे ऐप के लिए। openGym भी इसे वापस पढ़ लेता है।',

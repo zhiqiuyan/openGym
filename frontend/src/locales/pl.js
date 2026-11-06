@@ -1,5 +1,13 @@
 // Polish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'Potwierdź',
   'Cancel': 'Anuluj',
   'Press back again to exit': 'Naciśnij wstecz ponownie, aby wyjść',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'Dodaj do mojego planu',
   'How to': 'Wykonanie',
   'instructions in English': 'instrukcje po angielsku',
+  'some steps in English': 'część kroków po angielsku',
   'New routine': 'Nowy plan treningowy',
   'Add “{0}”': 'Dodaj „{0}”',
   '“{0}” added to {1}': '„{0}” dodano do {1}',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': 'Dzień wolny przed następnym',
   'Already in the loop: adds it again': 'Już jest w pętli: dodaje ją jeszcze raz',
   'Rest day. The loop goes on {0}.': 'Dzień odpoczynku. Pętla rusza dalej {0}.',
-  'Support openGym': 'Wesprzyj openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym jest darmowy: bez reklam, subskrypcji i śledzenia. Kawa pomaga, żeby tak zostało.',
-  'Rate openGym on the App Store': 'Oceń openGym w App Store',
-  'Buy me a coffee': 'Postaw mi kawę',
   'Export as spreadsheet (CSV)': 'Eksportuj jako arkusz (CSV)',
   'Workouts, body weight and measurements': 'Treningi, masa ciała i pomiary',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Jeden wiersz na serię, dla Excela, Sheets, trenera albo innej aplikacji. openGym też go wczyta z powrotem.',

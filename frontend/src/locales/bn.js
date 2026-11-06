@@ -1,5 +1,13 @@
 // Bengali UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'নিশ্চিত করুন',
   'Cancel': 'বাতিল',
   'Press back again to exit': 'বের হতে আবার ব্যাক চাপুন',
@@ -110,6 +118,7 @@ export default {
   'Add to my plan': 'আমার প্ল্যানে যোগ করুন',
   'How to': 'কীভাবে করবেন',
   'instructions in English': 'ইংরেজিতে নির্দেশনা',
+  'some steps in English': 'কিছু ধাপ ইংরেজিতে',
   'New routine': 'নতুন রুটিন',
   'Add “{0}”': '“{0}” যোগ করুন',
   '“{0}” added to {1}': '“{0}” {1}-এ যোগ হয়েছে',
@@ -2554,10 +2563,6 @@ export default {
   'A day off before the next one': 'পরেরটার আগে এক দিনের ছুটি',
   'Already in the loop: adds it again': 'লুপে আগেই আছে: আবার যোগ হবে',
   'Rest day. The loop goes on {0}.': 'বিশ্রামের দিন। লুপ আবার চলবে {0}।',
-  'Support openGym': 'openGym-কে সমর্থন করুন',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym বিনামূল্যে: কোনো বিজ্ঞাপন, সাবস্ক্রিপশন বা ট্র্যাকিং নেই। এক কাপ কফি এটাকে এভাবেই রাখে।',
-  'Rate openGym on the App Store': 'App Store-এ openGym-কে রেটিং দিন',
-  'Buy me a coffee': 'আমাকে একটা কফি কিনে দিন',
   'Export as spreadsheet (CSV)': 'স্প্রেডশিট হিসেবে এক্সপোর্ট করুন (CSV)',
   'Workouts, body weight and measurements': 'ওয়ার্কআউট, শরীরের ওজন আর মাপ',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'প্রতি সেটে একটি সারি, Excel, Sheets, আপনার কোচ বা অন্য অ্যাপের জন্য। openGym-ও এটা আবার পড়তে পারে।',

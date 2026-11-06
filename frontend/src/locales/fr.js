@@ -1,5 +1,13 @@
 // French UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'Confirmer',
   'Cancel': 'Annuler',
   'Press back again to exit': 'Appuie de nouveau pour quitter',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'Ajouter à mon plan',
   'How to': 'Exécution',
   'instructions in English': 'instructions en anglais',
+  'some steps in English': 'quelques étapes en anglais',
   'New routine': 'Nouvelle routine',
   'Add “{0}”': 'Ajouter « {0} »',
   '“{0}” added to {1}': '« {0} » ajouté à {1}',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': 'Un jour off avant le suivant',
   'Already in the loop: adds it again': 'Déjà dans la boucle : l’ajoute une fois de plus',
   'Rest day. The loop goes on {0}.': 'Jour de repos. La boucle reprend {0}.',
-  'Support openGym': 'Soutenir openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym est gratuit : sans pub, sans abonnement, sans pistage. Un café l’aide à le rester.',
-  'Rate openGym on the App Store': 'Noter openGym sur l’App Store',
-  'Buy me a coffee': 'Offre-moi un café',
   'Export as spreadsheet (CSV)': 'Exporter en tableur (CSV)',
   'Workouts, body weight and measurements': 'Séances, poids et mensurations',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Une ligne par série, pour Excel, Sheets, ton coach ou une autre app. openGym sait aussi la relire.',

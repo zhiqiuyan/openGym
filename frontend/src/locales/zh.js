@@ -1,5 +1,12 @@
 // Simplified Chinese UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  'Copyright & licence': '版权与许可',
+  'License': '许可证',
+  'Third-party notices': '第三方声明',
+  'Open the release page of this edition': '打开发行页面查看更新',
+  // HarmonyOS edition — its own version line and update path (see lib/channel.js).
+  'HarmonyOS edition': '鸿蒙版',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': '鸿蒙版为独立发行版本，有单独的版本号与更新通道，与 Android APK 互不影响。',
   'Confirm': '确认',
   'Cancel': '取消',
   'Press back again to exit': '再按一次返回退出',
@@ -79,6 +86,7 @@ export default {
   'Add to my plan': '加入我的计划',
   'How to': '动作要领',
   'instructions in English': '说明为英文',
+  'some steps in English': '部分步骤为英文',
   'New routine': '新训练日',
   'Add “{0}”': '添加“{0}”',
   '“{0}” added to {1}': '“{0}”已加入 {1}',
@@ -2475,10 +2483,7 @@ export default {
   'A day off before the next one': '下一项之前休息一天',
   'Already in the loop: adds it again': '已在循环中：再加一次',
   'Rest day. The loop goes on {0}.': '休息日。循环将在 {0} 继续。',
-  'Support openGym': '支持 openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym 免费：没有广告、没有订阅、没有追踪。一杯咖啡让它保持这样。',
-  'Rate openGym on the App Store': '在 App Store 为 openGym 评分',
-  'Buy me a coffee': '请我喝杯咖啡',
+  'Free: no ads, no subscriptions, no tracking.': '免费，没有广告、没有订阅、没有追踪。',
   'Export as spreadsheet (CSV)': '导出为表格 (CSV)',
   'Workouts, body weight and measurements': '训练、体重和围度',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': '每组一行，可用于 Excel、Sheets、你的教练或其他应用。openGym 也能再读回来。',

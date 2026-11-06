@@ -91,9 +91,9 @@ const typeIn = (el, value) => act(() => {
   el.dispatchEvent(new Event('input', { bubbles: true }))
 })
 const pickModel = value => act(() => {
-  const el = host.querySelector('select')
+  const el = host.querySelector('input[list="coach-models"]')
   Object.getOwnPropertyDescriptor(el.constructor.prototype, 'value').set.call(el, value)
-  el.dispatchEvent(new Event('change', { bubbles: true }))
+  el.dispatchEvent(new Event('input', { bubbles: true }))
 })
 const openByok = async () => { await click(rowTitled('Bring my own API key')) }
 
@@ -267,9 +267,9 @@ describe('CoachSetup — listing the models', () => {
 
     expect(all('.card .small').map(s => s.textContent))
       .toEqual(['Loading the exercise catalogue…', 'Checking the endpoint…', 'Ready'])
-    const select = host.querySelector('select')
-    expect([...select.options].map(o => o.value)).toEqual(['', 'claude-opus-5', 'claude-haiku-4'])
-    expect(select.value).toBe('claude-opus-5')
+    const input = host.querySelector('input[list="coach-models"]')
+    expect([...host.querySelectorAll('datalist#coach-models option')].map(o => o.value)).toEqual(['claude-opus-5', 'claude-haiku-4'])
+    expect(input.value).toBe('claude-opus-5')
     expect(btn('Save and use the Coach')).toBeTruthy()
     expect(btn('List models')).toBeTruthy()                 // still there, to re-list
   })
@@ -278,8 +278,8 @@ describe('CoachSetup — listing the models', () => {
     vi.mocked(localModels).mockResolvedValue({ ok: true, models: ['qwen3-27b'] })
     await withKey()
     await click(btn('List models')); await settle()
-    expect(host.querySelector('select').value).toBe('')
-    expect(host.querySelector('select option').textContent).toBe('(claude-opus-5)')
+    expect(host.querySelector('input[list="coach-models"]').value).toBe('')
+    expect(host.querySelector('input[list="coach-models"]').placeholder).toBe('(claude-opus-5)')
   })
 
   it('an endpoint that will not answer clears the progress and says why', async () => {
@@ -288,7 +288,7 @@ describe('CoachSetup — listing the models', () => {
     await click(btn('List models')); await settle()
     expect(mocks.toast).toHaveBeenCalledWith('Could not reach the provider: connection refused')
     expect(host.querySelector('.card')).toBe(null)
-    expect(host.querySelector('select')).toBe(null)
+    expect(host.querySelector('input[list="coach-models"]')).toBe(null)
     expect(btn('List models').disabled).toBe(false)          // and you can try again
   })
 
@@ -311,16 +311,16 @@ describe('CoachSetup — listing the models', () => {
     vi.mocked(localModels).mockResolvedValue({ ok: true, models: ['claude-opus-5'] })
     await withKey()
     await click(btn('List models')); await settle()
-    expect(host.querySelector('select')).toBeTruthy()
+    expect(host.querySelector('input[list="coach-models"]')).toBeTruthy()
 
     await click(chip('Google Gemini'))
-    expect(host.querySelector('select')).toBe(null)
+    expect(host.querySelector('input[list="coach-models"]')).toBe(null)
     expect(btn('Save and use the Coach')).toBeUndefined()
 
     vi.mocked(localModels).mockResolvedValue({ ok: true, models: [HTTP_PROVIDERS.gemini.defaultModel] })
     await click(btn('List models')); await settle()
     expect(localModels).toHaveBeenLastCalledWith({ provider: 'gemini', baseUrl: null }, 'sk-1')
-    expect(host.querySelector('select').value).toBe(HTTP_PROVIDERS.gemini.defaultModel)
+    expect(host.querySelector('input[list="coach-models"]').value).toBe(HTTP_PROVIDERS.gemini.defaultModel)
   })
 })
 

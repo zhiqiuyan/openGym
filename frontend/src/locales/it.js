@@ -1,5 +1,13 @@
 // Italian UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'Conferma',
   'Cancel': 'Annulla',
   'Press back again to exit': 'Premi di nuovo indietro per uscire',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'Aggiungi al mio piano',
   'How to': 'Esecuzione',
   'instructions in English': 'istruzioni in inglese',
+  'some steps in English': 'alcuni passaggi in inglese',
   'New routine': 'Nuova routine',
   'Add “{0}”': 'Aggiungi «{0}»',
   '“{0}” added to {1}': '«{0}» aggiunto a {1}',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': 'Un giorno libero prima del prossimo',
   'Already in the loop: adds it again': 'Già nel ciclo: lo aggiunge di nuovo',
   'Rest day. The loop goes on {0}.': 'Giorno di riposo. Il ciclo riprende {0}.',
-  'Support openGym': 'Sostieni openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym è gratis: niente pubblicità, abbonamenti o tracciamento. Un caffè lo mantiene così.',
-  'Rate openGym on the App Store': 'Valuta openGym sull’App Store',
-  'Buy me a coffee': 'Offrimi un caffè',
   'Export as spreadsheet (CSV)': 'Esporta come foglio di calcolo (CSV)',
   'Workouts, body weight and measurements': 'Allenamenti, peso corporeo e misure',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Una riga per serie, per Excel, Sheets, il tuo coach o un\'altra app. Anche openGym la rilegge.',

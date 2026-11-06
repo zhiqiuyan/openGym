@@ -1,5 +1,13 @@
 // Korean UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': '확인',
   'Cancel': '취소',
   'Press back again to exit': '뒤로를 한 번 더 누르면 종료됩니다',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': '내 계획에 추가',
   'How to': '운동 방법',
   'instructions in English': '설명은 영어로 제공',
+  'some steps in English': '일부 단계는 영어로 제공',
   'New routine': '새 루틴',
   'Add “{0}”': '"{0}" 추가',
   '“{0}” added to {1}': '"{0}"이(가) {1}에 추가됨',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': '다음 운동 전에 하루 쉬기',
   'Already in the loop: adds it again': '이미 순환에 있어요: 한 번 더 추가해요',
   'Rest day. The loop goes on {0}.': '쉬는 날이에요. 순환은 {0}에 이어져요.',
-  'Support openGym': 'openGym 후원하기',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym은 무료예요: 광고도, 구독도, 추적도 없어요. 커피 한 잔이 계속 그렇게 지켜줘요.',
-  'Rate openGym on the App Store': 'App Store에서 openGym 평가하기',
-  'Buy me a coffee': '커피 한 잔 사주기',
   'Export as spreadsheet (CSV)': '스프레드시트로 내보내기 (CSV)',
   'Workouts, body weight and measurements': '운동, 체중, 신체 치수',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': '세트마다 한 줄, Excel, Sheets, 코치나 다른 앱에서 열 수 있어요. openGym도 다시 읽을 수 있어요.',

@@ -1,5 +1,13 @@
 // Swedish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   // --- generic ---
   'Confirm': 'Bekräfta',
   'Cancel': 'Avbryt',
@@ -84,6 +92,7 @@ export default {
   'Add to my plan': 'Lägg till i min plan',
   'How to': 'Utförande',
   'instructions in English': 'instruktioner på engelska',
+  'some steps in English': 'vissa steg på engelska',
   'New routine': 'Ny rutin',
   'Add “{0}”': 'Lägg till ”{0}”',
   '“{0}” added to {1}': '”{0}” tillagd i {1}',
@@ -2516,10 +2525,6 @@ export default {
   'A day off before the next one': 'En vilodag före nästa',
   'Already in the loop: adds it again': 'Redan i varvet: läggs till igen',
   'Rest day. The loop goes on {0}.': 'Vilodag. Varvet fortsätter {0}.',
-  'Support openGym': 'Stöd openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym är gratis: ingen reklam, inga prenumerationer, ingen spårning. En kaffe håller det så.',
-  'Rate openGym on the App Store': 'Betygsätt openGym i App Store',
-  'Buy me a coffee': 'Bjud mig på en kaffe',
   'Export as spreadsheet (CSV)': 'Exportera som kalkylark (CSV)',
   'Workouts, body weight and measurements': 'Pass, kroppsvikt och mått',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'En rad per set, för Excel, Sheets, din tränare eller en annan app. openGym kan läsa in den igen också.',

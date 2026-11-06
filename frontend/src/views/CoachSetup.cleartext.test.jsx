@@ -82,8 +82,8 @@ describe('CoachSetup and an http:// endpoint', () => {
     expect(mocks.localModels.mock.calls[0][0]).toMatchObject({ provider: 'compatible', baseUrl: 'https://ollama.example.com' })
 
     type(input, 'HTTP://ollama.lan:11434')
-    const select = page.querySelector('select')
-    act(() => { select.value = 'llama3'; select.dispatchEvent(new Event('change', { bubbles: true })) })
+    // Model is free text with a datalist now: custom providers can name any model they serve.
+    type(page.querySelector('input[list="coach-models"]'), 'llama3')
     await act(async () => { byText(page, 'button', 'Save and use the Coach').click() })
     expect(mocks.setCoachLocal).not.toHaveBeenCalled()
     expect(mocks.toast).toHaveBeenLastCalledWith(expect.stringMatching(REFUSAL))

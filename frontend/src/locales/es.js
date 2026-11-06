@@ -1,5 +1,13 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'Confirmar',
   'Cancel': 'Cancelar',
   'Press back again to exit': 'Pulsa atrás otra vez para salir',
@@ -79,6 +87,7 @@ export default {
   'Add to my plan': 'Añadir a mi plan',
   'How to': 'Cómo hacerlo',
   'instructions in English': 'instrucciones en inglés',
+  'some steps in English': 'algunos pasos en inglés',
   'New routine': 'Nueva rutina',
   'Add “{0}”': 'Añadir «{0}»',
   '“{0}” added to {1}': '«{0}» añadido a {1}',
@@ -2475,10 +2484,6 @@ export default {
   'A day off before the next one': 'Un día libre antes del siguiente',
   'Already in the loop: adds it again': 'Ya está en el ciclo: lo añade otra vez',
   'Rest day. The loop goes on {0}.': 'Día de descanso. El ciclo sigue el {0}.',
-  'Support openGym': 'Apoya openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym es gratis: sin anuncios, sin suscripciones, sin rastreo. Un café hace que siga así.',
-  'Rate openGym on the App Store': 'Valora openGym en la App Store',
-  'Buy me a coffee': 'Invítame a un café',
   'Export as spreadsheet (CSV)': 'Exportar como hoja de cálculo (CSV)',
   'Workouts, body weight and measurements': 'Entrenos, peso corporal y medidas',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'Una fila por serie, para Excel, Sheets, tu entrenador u otra app. openGym también la vuelve a leer.',

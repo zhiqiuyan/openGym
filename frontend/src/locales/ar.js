@@ -1,5 +1,13 @@
 // Arabic UI strings. Keys are the English source strings (see lib/i18n.js).
 export default {
+  // About & updates: HarmonyOS edition + licence/copyright rows.
+  'HarmonyOS edition': 'HarmonyOS edition',
+  'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.': 'This HarmonyOS edition has its own version line and update channel, separate from the Android APK.',
+  'Free: no ads, no subscriptions, no tracking.': 'Free: no ads, no subscriptions, no tracking.',
+  'Copyright & licence': 'Copyright & licence',
+  'License': 'License',
+  'Third-party notices': 'Third-party notices',
+  'Open the release page of this edition': 'Open the release page of this edition',
   'Confirm': 'تأكيد',
   'Cancel': 'إلغاء',
   'Press back again to exit': 'اضغط زر الرجوع مرة أخرى للخروج',
@@ -99,6 +107,7 @@ export default {
   'Add to my plan': 'أضِف إلى خطتي',
   'How to': 'طريقة الأداء',
   'instructions in English': 'التعليمات بالإنجليزية',
+  'some steps in English': 'بعض الخطوات بالإنجليزية',
   'New routine': 'روتين جديد',
   'Add “{0}”': 'أضِف «{0}»',
   '“{0}” added to {1}': 'تمت إضافة «{0}» إلى {1}',
@@ -2530,10 +2539,6 @@ export default {
   'A day off before the next one': 'يوم راحة قبل التالي',
   'Already in the loop: adds it again': 'موجود في الدورة: يضيفه مرة أخرى',
   'Rest day. The loop goes on {0}.': 'يوم راحة. تستمر الدورة {0}.',
-  'Support openGym': 'ادعم openGym',
-  'openGym is free: no ads, no subscriptions, no tracking. A coffee keeps it that way.': 'openGym مجاني: بلا إعلانات ولا اشتراكات ولا تتبّع. فنجان قهوة يُبقيه كذلك.',
-  'Rate openGym on the App Store': 'قيّم openGym في App Store',
-  'Buy me a coffee': 'اشترِ لي قهوة',
   'Export as spreadsheet (CSV)': 'تصدير كجدول بيانات (CSV)',
   'Workouts, body weight and measurements': 'التمارين ووزن الجسم والقياسات',
   'One row per set, for Excel, Sheets, your coach or another app. openGym reads it back too.': 'صف لكل مجموعة، لـ Excel أو Sheets أو مدربك أو تطبيق آخر. ويقرأه openGym من جديد أيضًا.',
