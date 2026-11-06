@@ -249,12 +249,34 @@ export const Print = UNSUPPORTED('Print')
 export const RestAlert = UNSUPPORTED('RestAlert')
 export const WatchBridge = UNSUPPORTED('WatchBridge')
 export const WidgetBridge = UNSUPPORTED('WidgetBridge')
-export const HealthConnect = UNSUPPORTED('HealthConnect')
 export const AppleHealth = UNSUPPORTED('AppleHealth')
+
+// ---------------------------------------------------------------------------
+// Health Connect — on Harmony this IS the device's own 华为运动健康, reached through the
+// system Health Service Kit (native HealthConnectPlugin.ets, registered as 'HealthConnect').
+// The page side (lib/health-sync.js) calls it exactly as it calls Android's Health Connect —
+// status / requestPermissions / write / remove / readWeights / readHeartRate / openSettings /
+// setEnabled — so every call forwards to the native bridge. Until the ArkTS project is built
+// with the plugin present, the native side answers "unsupported" and the UI shows the store as
+// unavailable; the app is written to handle that, no hang.
+// ---------------------------------------------------------------------------
+
+const HealthConnect = {
+  status: (opts) => nativeCall('HealthConnect', 'status', opts),
+  requestPermissions: (opts) => nativeCall('HealthConnect', 'requestPermissions', opts),
+  write: (opts) => nativeCall('HealthConnect', 'write', opts),
+  remove: (opts) => nativeCall('HealthConnect', 'remove', opts),
+  readWeights: (opts) => nativeCall('HealthConnect', 'readWeights', opts),
+  readHeartRate: (opts) => nativeCall('HealthConnect', 'readHeartRate', opts),
+  openSettings: (opts) => nativeCall('HealthConnect', 'openSettings', opts),
+  setEnabled: (opts) => nativeCall('HealthConnect', 'setEnabled', opts),
+  // A promise resolved with this object must not mistake it for a thenable (lib/coach-secrets.js).
+  then: undefined,
+}
 
 export {
   SecureStorage, Filesystem, LocalNotifications, App, Share, SplashScreen,
-  BarcodeScanner, GymReminder, Channel
+  BarcodeScanner, GymReminder, Channel, HealthConnect
 }
 
 export { hasNativeBridge }

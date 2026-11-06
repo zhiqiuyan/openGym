@@ -31,7 +31,7 @@
 | 仓库性质 | 公开 fork；与上游作者及 Gym visual 无隶属或背书关系 |
 | 默认分支 | `harmony`（发版分支 = 上游主线 + 鸿蒙版补丁集） |
 | `main` | 上游 `main` 的**纯镜像**，逐提交快进，内容与上游一致 |
-| 当前鸿蒙版 | `1.0.2`（2026-11-06），独立的产品线与版本序列，自 `1.0.0` 起 |
+| 当前鸿蒙版 | `1.1.0`（2026-11-06），独立的产品线与版本序列，自 `1.0.0` 起 |
 | 许可证 | GNU AGPL v3.0；动作媒体另有单独授权限制（见[版权与许可](#版权与许可)） |
 
 ## 下载与安装
@@ -43,11 +43,11 @@
 | Android | 上游 [Release 中的签名 APK](https://github.com/DuarteSantos8/openGym/releases/latest) | 上游 |
 | Web / 自托管 | 上游的 Docker Compose 部署 | 上游 |
 
-**当前版本 `1.0.2`**
+**当前版本 `1.1.0`**
 
-- `versionName 1.0.2` · `versionCode 10002` · `buildVersion 3`
-- 文件 `openGym-Harmony-1.0.2-20261106-unsigned.hap`，233,878,589 字节（含内置动作媒体）
-- SHA256 `c168ae358e172679f236a7a3ff05f39af44f81e5791510406abc5e8fd0cf24f3`
+- `versionName 1.1.0` · `versionCode 10003` · `buildVersion 4`
+- 文件 `openGym-Harmony-1.1.0-20261106-unsigned.hap`，233,959,011 字节（含内置动作媒体）
+- SHA256 `9e9bc8262d956215b4b4dad25a2872fb80608658afbe301b4e469d83c00c5b47`
 - 同批附件：`.sha256` 单文件校验与 `SHA256SUMS` 汇总校验
 
 下载后建议先校验完整性：
@@ -57,7 +57,7 @@ sha256sum -c SHA256SUMS
 ```
 
 ```powershell
-(Get-FileHash .\openGym-Harmony-1.0.2-20261106-unsigned.hap -Algorithm SHA256).Hash
+(Get-FileHash .\openGym-Harmony-1.1.0-20261106-unsigned.hap -Algorithm SHA256).Hash
 ```
 
 安装包文件名以 `-unsigned` 结尾，部署到真机前需按 HarmonyOS 平台要求完成签名（本仓库不提供签名证书）。
@@ -71,7 +71,10 @@ sha256sum -c SHA256SUMS
 - **版本与更新**：独立版本线、独立更新渠道与检查更新入口。
 - **关于与更新页**：重做品牌区、版本与许可证入口，保留「免费，没有广告、没有订阅、没有追踪」，移除捐赠与评分区块，补充版权、许可证、源码与第三方声明链接。
 - **界面适配**：适配上游新增的系统栏模块与 1.4.5 设计令牌。
-- **语言包一致性**：当前 19 个界面语言包键集合一致（各 3,619 键）。
+- **语言包一致性**：当前 19 个界面语言包键集合一致（各 3,680 键）。
+- **个人信息管理**：新增「个人信息」设置页（鸿蒙 7.0 风格），可录入身高、体重、出生年份，自动计算 BMI（中国成人标准 18.5 / 24 / 28）与基础代谢率（BMR），并支持一键记录称重。
+- **华为运动健康直连**：鸿蒙版用本机 Health Service Kit 替代 Android 的 Health Connect 云中转方案，直接本地读写华为运动健康数据（体重、身高、心率、步数、睡眠、训练记录）；页面侧复用上游 `health-sync` 管线，无需平台分支。原生 `HealthConnectPlugin` 已写入 `opengym-harmony` 工程（需 DevEco 完整重编译后随 HAP 生效，见 [docs/HUAWEI_HEALTH.md](docs/HUAWEI_HEALTH.md)）。
+- **主页标题**：主页面左上角标题由 `openGym` 改为「开放健身房」。
 
 ## 版本与发版
 

@@ -60,6 +60,9 @@ import { usePasskeys, PasskeysRow, DeviceLinkRow, openDeviceLinkRedeem, PairShee
 import { DeleteAccountRow } from '../components/DeleteAccount.jsx'
 import { warmupAutoOf } from '../lib/warmup-ramp.js'
 import { Section, Row, SelectRow, Switch, Segmented, Button, TextField, SearchField } from '../components/ui.jsx'
+// HarmonyOS edition: personal information (height / weight / BMI) and HUAWEI Health Kit.
+// The profile page is reachable only in the Harmony build (see settings-pages.js).
+import ProfilePage from './ProfilePage.jsx'
 import { POLICIES_FOR, POLICY_NAME, POLICY_DESC, profileRule } from '../lib/progression.js'
 import { PAGES, ROOT_GROUPS, pageVisible, searchSettings, pageTrail } from './settings-pages.js'
 import { platformNow } from '../lib/platform-now.js'
@@ -503,6 +506,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     reminders: () => (S.reminder?.on ? (S.reminder.time || DEF.reminder?.time || '') : t('Off')),
     plan: () => (mode === 'rotation' ? t('Rotation') : t('Fixed Week')) + ' · ' + shortWeekday(weekStartOf(S) === SUNDAY ? 0 : 1),
     units: () => (S.unit || 'kg') + ' · ' + (LANGS[lang] || lang),
+    profile: () => S.heightCm ? `${S.heightCm} cm` : '',
     equipment: () => (S.equipFilterOn && activeProfile ? activeProfile.name : ownsNoDumbbells(S) ? t('Everything but dumbbells') : t('Everything')),
     look: () => themeLabel + ' · ' + accentLabel(S),
     modules: () => { const p = presetOf(S); return p === 'custom' ? t('Custom') : presetCopy()[p][0] },
@@ -564,6 +568,7 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     })} />
 
   const pages = {
+    profile: () => <ProfilePage S={S} update={update} toast={toast} />,
     modules: () => <ModulesPage />,
     watch: () => <WatchSettingsPage />,
     integrations: () => <IntegrationsPage android={android} ios={ios} />,
@@ -1864,6 +1869,16 @@ function RegisterInline({ close, setUser, pushState, pullState, toast }) {
 // Android 13 and lower, where it is an app of its own. The iPhone app's card is the same switch for
 // Apple Health, which the Apple Watch app also goes by (heart rate per set).
 const HEALTH_COPY = {
+  // HarmonyOS edition: the device's own 华为运动健康, reached locally through the system Health
+  // Service Kit — no cloud, no relay. These strings are Harmony-only, so they are written in
+  // Chinese (the edition's primary language) rather than threaded through the 19-language packs.
+  harmony: () => ({
+    section: '华为运动健康', write: '同步到华为运动健康', open: '打开华为运动健康',
+    footer: '完成或改动训练、称重后，训练与体重会写入华为运动健康。',
+    on: '已同步到华为运动健康', denied: '未授予华为运动健康权限', failed: '无法写入华为运动健康',
+    removeFailed: '无法从华为运动健康移除', stop: '停止同步到华为运动健康？',
+    stopSub: 'openGym 已写入的数据可保留在华为运动健康中，也可一并移除。',
+  }),
   android: () => ({
     section: t('Health Connect'), write: t('Write to Health Connect'), open: t('Open Health Connect'),
     footer: t('Workouts and weigh-ins go to Health Connect when you finish or change them.'),
@@ -1896,8 +1911,9 @@ function HealthLinkRow({ android, nav }) {
   useEffect(() => { let gone = false; healthStatus().then(s => { if (!gone) setSt(s) }).catch(() => {}); return () => { gone = true } }, [])
   if (!st || st.status === 'unsupported') return null
   const ios = st.platform === 'ios' || (!st.platform && !android)
+  const title = ios ? t('Apple Health') : HARMONY ? t('Huawei Health') : t('Health Connect')
   return <Section>
-    <Row icon="heart" iconTint="var(--red)" title={ios ? t('Apple Health') : t('Health Connect')} subtitle={t('Now in Integrations')} accessory="chevron"
+    <Row icon="heart" iconTint="var(--red)" title={title} subtitle={t('Now in Integrations')} accessory="chevron"
       onClick={() => nav('/settings/' + (ios ? 'apple-health' : 'health-connect'))} />
   </Section>
 }
@@ -1917,18 +1933,21 @@ function HealthConnectCard({ S, toast, android, page = false }) {
     return () => { gone = true; off() }
   }, [])
   const ios = st?.platform === 'ios'
+  const hm = HARMONY
   if (!st || !h) return null
   if (st.status === 'unsupported' || (!android && !ios)) {
-    return page ? <Section><Row icon="info" iconTint="var(--grey)" title={t('Not on this phone')} subtitle={t('This phone has no health store openGym can use.')} /></Section> : null
+    return page ? <Section><Row icon="info" iconTint="var(--grey)" title={hm ? '华为运动健康' : t('Not on this phone')} subtitle={hm ? '本设备暂未启用华为运动健康的数据读写能力。' : t('This phone has no health store openGym can use.')} /></Section> : null
   }
-  const c = HEALTH_COPY[ios ? 'ios' : 'android']()
+  const c = HEALTH_COPY[hm ? 'harmony' : (ios ? 'ios' : 'android')]()
 
   if (st.status !== 'available') return (
-    <Section title={t('Health Connect')} tour="data-health">
-      <Row icon="heart" iconTint="var(--red)" title={t('Health Connect')}
-        subtitle={st.status === 'update'
-          ? t('Update Health Connect to share workouts and weigh-ins with other apps.')
-          : t('Install Health Connect to share workouts and weigh-ins with other apps.')}
+    <Section title={c.section} tour="data-health">
+      <Row icon="heart" iconTint="var(--red)" title={c.section}
+        subtitle={hm
+          ? '在系统设置中授权华为运动健康的数据权限后，即可同步训练与体重。'
+          : st.status === 'update'
+            ? t('Update Health Connect to share workouts and weigh-ins with other apps.')
+            : t('Install Health Connect to share workouts and weigh-ins with other apps.')}
         accessory="chevron" onClick={() => openHealthConnect().catch(() => {})} />
     </Section>
   )

@@ -31,6 +31,9 @@ export const PAGES = {
   integrations: { title: 'Integrations', icon: 'plug', tint: 'var(--indigo)', kw: 'integrations connect apps services webhook webhooks home assistant n8n ntfy node-red zapier automation garmin fitbit strava sync api mcp' },
   zepp: { title: 'Zepp OS watch', icon: 'watch', tint: 'var(--orange)', mod: 'watch' },
   data: { title: 'Data & backup', icon: 'folder', tint: 'var(--blue)' },
+  // HarmonyOS edition only. `kw` carries the row words: their fields are custom Harmony-style
+  // controls rather than .lrow rows, so they are search hits through the page, not SEARCH.
+  profile: { title: 'Personal information', icon: 'personCircle', tint: 'var(--blue)', kw: 'profile personal information body height weight bmi body mass index age sex gender birth year target weight body fat basal metabolic rate healthy range weigh in scale' },
   about: { title: 'About & updates', icon: 'info', tint: 'var(--grey)' },
   account: { title: 'Account', icon: 'personCircle', tint: 'var(--grey)' },
   advanced: { title: 'Fine-tuning', icon: 'wrench', tint: 'var(--grey)', parent: 'workout' },
@@ -49,7 +52,7 @@ export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom. Whether a row shows is pageVisible's call.
 // Modules first, on its own: what the app shows at all comes before how each part behaves.
-export const ROOT_GROUPS = [['modules'], ['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch', 'zepp'], ['integrations', 'data', 'about']]
+export const ROOT_GROUPS = [['modules'], ['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment', 'profile'], ['look', 'coach', 'watch', 'zepp'], ['integrations', 'data', 'about']]
 
 /**
  * Whether a page exists for this device and profile. Reminders need a push server (signed in) or
@@ -57,6 +60,9 @@ export const ROOT_GROUPS = [['modules'], ['workout', 'alerts', 'reminders'], ['p
  * runs on the server, set up by its admin).
  */
 export function pageVisible(page, ctx) {
+  // HarmonyOS edition only. Keeping the gate here means the web/iOS/Android builds — and their
+  // root-row assertions — see exactly the same list of pages as before it was added.
+  if (page === 'profile') return HARMONY
   // A page of a module that is off (ctx.mod answers isOn for this profile; absent: all on).
   if (PAGES[page]?.mod && ctx.mod && !ctx.mod(PAGES[page].mod)) return false
   if (page === 'reminders') return !!(ctx.user || ctx.mobile)
