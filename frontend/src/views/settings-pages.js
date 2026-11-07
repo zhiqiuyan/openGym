@@ -28,12 +28,13 @@ export const PAGES = {
   coach: { title: 'AI Coach', icon: 'sparkles', tint: 'var(--green)', mod: 'coach' },
   watch: { title: 'Apple Watch', icon: 'watch', tint: 'var(--grey)', mod: 'watch' },
   // Settings → Integrations (v1.4.4): the directory of what openGym talks to (views/Integrations.jsx).
-  integrations: { title: 'Integrations', icon: 'plug', tint: 'var(--indigo)', kw: 'integrations connect apps services webhook webhooks home assistant n8n ntfy node-red zapier automation garmin fitbit strava sync api mcp' },
+  // HarmonyOS adds this device's Huawei Health and weigh-in logging here (v1.2.0).
+  integrations: { title: 'Integrations', icon: 'plug', tint: 'var(--indigo)', kw: 'integrations connect apps services webhook webhooks home assistant n8n ntfy node-red zapier automation garmin fitbit strava sync api mcp huawei health harmony weigh in weigh-in scale record' },
   zepp: { title: 'Zepp OS watch', icon: 'watch', tint: 'var(--orange)', mod: 'watch' },
   data: { title: 'Data & backup', icon: 'folder', tint: 'var(--blue)' },
   // HarmonyOS edition only. `kw` carries the row words: their fields are custom Harmony-style
   // controls rather than .lrow rows, so they are search hits through the page, not SEARCH.
-  profile: { title: 'Personal information', icon: 'personCircle', tint: 'var(--blue)', kw: 'profile personal information body height weight bmi body mass index age sex gender birth year target weight body fat basal metabolic rate healthy range weigh in scale' },
+  profile: { title: 'Personal information', icon: 'personCircle', tint: 'var(--blue)', kw: 'profile personal information nickname name photo avatar picture body height weight bmi body mass index age sex gender birth year target weight body fat basal metabolic rate healthy range' },
   about: { title: 'About & updates', icon: 'info', tint: 'var(--grey)' },
   account: { title: 'Account', icon: 'personCircle', tint: 'var(--grey)' },
   advanced: { title: 'Fine-tuning', icon: 'wrench', tint: 'var(--grey)', parent: 'workout' },
@@ -52,7 +53,10 @@ export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom. Whether a row shows is pageVisible's call.
 // Modules first, on its own: what the app shows at all comes before how each part behaves.
-export const ROOT_GROUPS = [['modules'], ['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment', 'profile'], ['look', 'coach', 'watch', 'zepp'], ['integrations', 'data', 'about']]
+// HarmonyOS v1.2.0: Personal information is no longer a row here. It takes the account card at
+// the very top of the root (replacing "This phone"), so it is the first thing on the page and
+// there is only one way into it. PAGES.profile stays for the route, its title and search.
+export const ROOT_GROUPS = [['modules'], ['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch', 'zepp'], ['integrations', 'data', 'about']]
 
 /**
  * Whether a page exists for this device and profile. Reminders need a push server (signed in) or
@@ -74,8 +78,11 @@ export function pageVisible(page, ctx) {
   // The phone app only: a browser cannot watch where you are with the page closed.
   if (page === 'gym' || page === 'gym-find' || page === 'gym-edit') return !!ctx.mobile && ctx.gymReminder !== false
   // The health store of the phone this runs on (unknown counts as yes, as for the watch).
-  if (page === 'apple-health') return !!ctx.ios
-  if (page === 'health-connect') return !!ctx.mobile && !!ctx.android
+  // HarmonyOS uses the health-connect route for Huawei Health, reached from Integrations; its
+  // WebView does not report an Android platform, so the Harmony build opts in on its own and
+  // never offers Apple Health.
+  if (page === 'apple-health') return !HARMONY && !!ctx.ios
+  if (page === 'health-connect') return !!ctx.mobile && (HARMONY || !!ctx.android)
   return page in PAGES
 }
 

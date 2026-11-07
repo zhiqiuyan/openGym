@@ -2894,6 +2894,9 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
   background:linear-gradient(160deg,var(--surface-3),var(--surface-2));color:var(--label-2)}
 .sp-acct .lrow-t{font-size:19px;font-weight:600}
 .sp-avatar.on{background:var(--acc-soft);color:var(--acc-ink);font-size:24px;font-weight:700}
+/* HarmonyOS: the account card is Personal information and can carry a chosen photo. */
+.sp-avatar{overflow:hidden}
+.sp-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .sp-version{text-align:center;margin-top:4px;line-height:1.6}
 /* The root rows' previews ("2:00 de descanso · Tarjetas", "Som · Vibração") are two or three facts, and a
    one-line ellipsis cut all but the first. They wrap instead, up to three lines, and never below
@@ -3336,6 +3339,47 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
   font-size:var(--fs-callout);font-family:inherit;font-variant-numeric:tabular-nums}
 .hm-input::placeholder{color:var(--label-3)}
 .hm-unit{flex:none;font-size:var(--fs-footnote);color:var(--label-2)}
+
+/* v1.2.0 — identity at the top of the page: a nickname and a photo, both tappable. */
+.hm-id{display:flex;align-items:center;gap:16px;padding:2px 0}
+.hm-avatar{flex:none;width:64px;height:64px;border-radius:50%;overflow:hidden;display:grid;place-items:center;
+  border:0;padding:0;background:var(--surface-raised);color:var(--label-2);font-size:var(--fs-large);
+  font-weight:600}
+.hm-avatar img{width:100%;height:100%;object-fit:cover}
+:root[data-theme="light"] .sp-page .hm-avatar{background:var(--bg)}
+.hm-id-m{flex:1;min-width:0;display:grid;gap:4px;text-align:start;background:transparent;border:0;padding:0;
+  color:inherit;font-family:inherit}
+.hm-id-name{font-size:var(--fs-title3);font-weight:600;color:var(--label);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.hm-id-sub{font-size:var(--fs-footnote);color:var(--label-2)}
+
+/* "Your details": one row per fact. The value is 6 full-width characters wide at the same
+   --fs-subhead size as the "Body mass index" label above, so the two line up exactly and no
+   input stretches across the page. Tapping it opens a sheet with its own h3. */
+.hm-rows{display:grid;gap:2px;padding:2px 0}
+.hm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px}
+.hm-row-l{font-size:var(--fs-footnote);color:var(--label-2)}
+.hm-value{flex:none;width:6em;box-sizing:border-box;display:inline-flex;align-items:baseline;
+  justify-content:flex-end;gap:4px;padding:7px 10px;border:0;border-radius:12px;
+  background:var(--surface-raised);color:var(--label);font-family:inherit;
+  font-size:var(--fs-subhead);font-variant-numeric:tabular-nums;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+:root[data-theme="light"] .sp-page .hm-value{background:var(--bg)}
+.hm-value .hm-unit{font-size:var(--fs-caption)}
+
+/* The sheet: a third-level heading, one field, two quiet actions. */
+.hm-sheet-h{margin:0 0 6px;font-size:var(--fs-title3);font-weight:600;color:var(--label)}
+.hm-sheet-lead{margin:0 0 14px;font-size:var(--fs-footnote);line-height:var(--lh-small);color:var(--label-2)}
+.hm-sheet-field{display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:12px;
+  background:var(--surface-raised)}
+:root[data-theme="light"] .hm-sheet-field{background:var(--bg)}
+.hm-sheet-field .field{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--label);
+  font-size:var(--fs-callout);font-variant-numeric:tabular-nums}
+.hm-sheet-problem{margin:8px 0 0;font-size:var(--fs-footnote);color:var(--red-ink)}
+.hm-sheet-btns{display:flex;gap:10px;margin-top:18px}
+.hm-sheet-btns .btn{flex:1;justify-content:center;min-height:44px}
+.hm-choice{display:grid;gap:2px}
+.hm-choice-row.on .lrow-t{color:var(--acc-ink)}
 
 .hm-btn{width:100%;justify-content:center;min-height:44px;margin-top:10px;border-radius:12px;
   background:var(--acc);color:var(--on-acc)}

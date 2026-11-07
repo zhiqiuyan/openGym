@@ -31,7 +31,7 @@
 | 仓库性质 | 公开 fork；与上游作者及 Gym visual 无隶属或背书关系 |
 | 默认分支 | `harmony`（发版分支 = 上游主线 + 鸿蒙版补丁集） |
 | `main` | 上游 `main` 的**纯镜像**，逐提交快进，内容与上游一致 |
-| 当前鸿蒙版 | `1.1.0`（2026-11-06），独立的产品线与版本序列，自 `1.0.0` 起 |
+| 当前鸿蒙版 | `1.1.0`（2026-11-07 完整原生编译版），独立的产品线与版本序列，自 `1.0.0` 起 |
 | 许可证 | GNU AGPL v3.0；动作媒体另有单独授权限制（见[版权与许可](#版权与许可)） |
 
 ## 下载与安装
@@ -43,12 +43,14 @@
 | Android | 上游 [Release 中的签名 APK](https://github.com/DuarteSantos8/openGym/releases/latest) | 上游 |
 | Web / 自托管 | 上游的 Docker Compose 部署 | 上游 |
 
-**当前版本 `1.1.0`**
+**当前版本 `1.1.0`（2026-11-07 完整原生编译版）**
 
 - `versionName 1.1.0` · `versionCode 10003` · `buildVersion 4`
-- 文件 `openGym-Harmony-1.1.0-20261106-unsigned.hap`，233,959,011 字节（含内置动作媒体）
-- SHA256 `9e9bc8262d956215b4b4dad25a2872fb80608658afbe301b4e469d83c00c5b47`
-- 同批附件：`.sha256` 单文件校验与 `SHA256SUMS` 汇总校验
+- 文件 `openGym-Harmony-1.1.0-20261107-native-unsigned.hap`，236,758,465 字节（含内置动作媒体）
+- SHA256 `64c92916b5f7beafe1a76c4714ef6093840a3196c1667fa95ab4aae8ab9ada68`
+- 同批附件：`.sha256` 单文件校验、`SHA256SUMS` 汇总校验、`release-notes-1.1.0-native.md` 发布说明
+- 该版由 hvigor 完整编译，`ets/modules.abc` 已包含原生 `HealthConnectPlugin`；2026-11-06 的
+  rawfile 重打包版（233,959,011 字节）已被取代，请勿再使用。
 
 下载后建议先校验完整性：
 
@@ -57,7 +59,7 @@ sha256sum -c SHA256SUMS
 ```
 
 ```powershell
-(Get-FileHash .\openGym-Harmony-1.1.0-20261106-unsigned.hap -Algorithm SHA256).Hash
+(Get-FileHash .\openGym-Harmony-1.1.0-20261107-native-unsigned.hap -Algorithm SHA256).Hash
 ```
 
 安装包文件名以 `-unsigned` 结尾，部署到真机前需按 HarmonyOS 平台要求完成签名（本仓库不提供签名证书）。
@@ -73,7 +75,7 @@ sha256sum -c SHA256SUMS
 - **界面适配**：适配上游新增的系统栏模块与 1.4.5 设计令牌。
 - **语言包一致性**：当前 19 个界面语言包键集合一致（各 3,680 键）。
 - **个人信息管理**：新增「个人信息」设置页（鸿蒙 7.0 风格），可录入身高、体重、出生年份，自动计算 BMI（中国成人标准 18.5 / 24 / 28）与基础代谢率（BMR），并支持一键记录称重。
-- **华为运动健康直连**：鸿蒙版用本机 Health Service Kit 替代 Android 的 Health Connect 云中转方案，直接本地读写华为运动健康数据（体重、身高、心率、步数、睡眠、训练记录）；页面侧复用上游 `health-sync` 管线，无需平台分支。原生 `HealthConnectPlugin` 已写入 `opengym-harmony` 工程（需 DevEco 完整重编译后随 HAP 生效，见 [docs/HUAWEI_HEALTH.md](docs/HUAWEI_HEALTH.md)）。
+- **华为运动健康直连**：鸿蒙版用本机 Health Service Kit 替代 Android 的 Health Connect 云中转方案，直接本地读写华为运动健康数据（体重、身高、心率、步数、睡眠、训练记录）；页面侧复用上游 `health-sync` 管线，无需平台分支。原生 `HealthConnectPlugin` 已随 2026-11-07 的完整 hvigor 编译进入 HAP 的方舟字节码；真机要实际放行读写仍需 AGC 配置、Health Kit 权限审批、权限声明与签名构建（见 [docs/HUAWEI_HEALTH.md](docs/HUAWEI_HEALTH.md)）。
 - **主页标题**：主页面左上角标题由 `openGym` 改为「开放健身房」。
 
 ## 版本与发版

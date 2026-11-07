@@ -18,6 +18,12 @@ import Icon from '../components/Icon.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import { Section, Row, Switch, Button, TextField } from '../components/ui.jsx'
 import { isOn } from '../lib/modules.js'
+import { addWeighIn, dayOf, timeOf } from '../lib/weigh-ins.js'
+import { latestWeight } from '../lib/body-metrics.js'
+
+// HarmonyOS edition (v1.2.0): this device's Huawei Health and weigh-in logging live here rather
+// than in Personal information. Other builds keep the directory exactly as it was.
+const HARMONY = import.meta.env.VITE_HARMONY === '1'
 
 /* Settings → Integrations (v1.4.4): one directory of what openGym can talk to, grouped, each card
    with what it is, whether it is on, and the one thing to do next. The cards are thin on purpose:
@@ -32,6 +38,35 @@ export const INTEGRATIONS_DOCS = 'https://github.com/DuarteSantos8/openGym/blob/
 const sheet = render => useUI.getState().openSheet(render)
 const nameOf = card => (card.translate ? t(card.name) : card.name)
 const ACTION = { connect: 'Connect', manage: 'Manage', import: 'Import', export: 'Export', open: 'Open' }
+
+/* HarmonyOS: a weigh-in typed in its own sheet, with the last known weight as the starting point.
+   It writes the same history the charts and BMI read, so nothing new is stored elsewhere. */
+function WeighInSheet({ unit, weight, update, toast, close }) {
+  const [draft, setDraft] = useState(weight == null ? '' : String(weight))
+  const [problem, setProblem] = useState('')
+  const save = () => {
+    const w = Number(String(draft).trim())
+    if (!String(draft).trim() || !Number.isFinite(w) || w <= 0) { setProblem(t('Enter a weight first.')); return }
+    update(s => addWeighIn(s, { d: dayOf(Date.now()), at: timeOf(Date.now()), w }))
+    toast?.(t('Weigh-in saved'))
+    close()
+  }
+  return <>
+    <h3 className="hm-sheet-h">{t('Save weigh-in')}</h3>
+    <p className="hm-sheet-lead">{t("Add today's weight to your history.")}</p>
+    <div className="hm-sheet-field">
+      <TextField type="number" inputMode="decimal" step="any" min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
+        value={draft} placeholder="—" aria-label={t('Weight')} autoFocus
+        onChange={e => { setDraft(e.target.value); setProblem('') }} />
+      <span className="hm-unit">{unit}</span>
+    </div>
+    {problem && <p className="hm-sheet-problem" role="alert">{problem}</p>}
+    <div className="hm-sheet-btns">
+      <Button variant="plain" onClick={close}>{t('Cancel')}</Button>
+      <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    </div>
+  </>
+}
 
 /** The server's integrations for this profile, or null where there is no server to ask. */
 export function useServerIntegrations(on) {
@@ -119,12 +154,19 @@ export default function IntegrationsPage({ android = false, ios = false }) {
   const health = useHealth()
   const platform = MOBILE ? (ios ? 'ios' : android ? 'android' : health?.platform || platformNow()) : null
   const S = useStore(s => s.S)
+  const update = useStore(s => s.update)
   const ctx = {
     mobile: MOBILE, platform, user, demo: DEMO, admin: !!user?.admin, health, server: server.data, offered,
     mod: id => isOn(S, id),
     coach: coachAvailable(config, user, { demo: DEMO }), coachMode: coachLocal?.mode === 'server' || coachLocal?.mode === 'byok' ? coachLocal.mode : null,
   }
+  // HarmonyOS does not have Apple Health or Android Health Connect: its own health store and
+  // weigh-in logging take their place in the section below, so the directory cards are dropped.
   const dir = directory(ctx)
+    .map(cat => HARMONY ? { ...cat, cards: cat.cards.filter(c => c.id !== 'apple-health' && c.id !== 'health-connect') } : cat)
+    .filter(cat => cat.cards.length)
+  const unit = S.unit === 'lb' ? 'lb' : 'kg'
+  const startWeight = latestWeight(S)?.shown ?? S.profileWeight ?? null
 
   const webhookCtx = { server, lan: !!config?.integrations?.lan, toast }
   const act = card => {
@@ -160,6 +202,16 @@ export default function IntegrationsPage({ android = false, ios = false }) {
 
   return <>
     <p className="sect-f intg-intro">{t('Only what you switch on talks to anything. The rest stays out of your way.')}</p>
+    {/* HarmonyOS v1.2.0: moved out of Personal information, so the profile page is only about
+        the person and the phone's health features sit with the other integrations. */}
+    {HARMONY && <Section title={t('This device')} footer={t('Health data and weigh-ins stay on this phone.')}>
+      <Row icon="heart" iconTint="var(--red)" title={t('Huawei Health')}
+        subtitle={t('Connect and manage Huawei Health')} accessory="chevron"
+        onClick={() => nav('/settings/health-connect')} />
+      <Row icon="scale" iconTint="var(--teal)" title={t('Save weigh-in')}
+        subtitle={t('Add a weight to your history')} accessory="chevron"
+        onClick={() => sheet(close => <WeighInSheet unit={unit} weight={startWeight} update={update} toast={toast} close={close} />)} />
+    </Section>}
     {server.error && <Section><Row icon="warning" iconTint="var(--orange)" title={t('Could not reach your server')} subtitle={t('Tap to try again')} onClick={() => server.load()} /></Section>}
     {dir.map(cat => <div key={cat.id}>
       <Section title={t(cat.title)}>

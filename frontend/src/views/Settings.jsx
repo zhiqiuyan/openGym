@@ -1312,15 +1312,23 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
   const [q, setQ] = useState(() => (key && lastQuery.key === key ? lastQuery.q : ''))
   const set = v => { lastQuery = { q: v, key }; setQ(v) }
   const hits = q.trim() ? searchSettings(q, ctx) : null
-  // The account card: who this is, and the one line that matters about it.
-  const acct = DEMO ? { title: t('Demo'), sub: t('Example data, only in this browser.') }
-    : user ? {
-      title: user.name || t('Account'),
-      sub: sync && sync.status && sync.status !== 'ok' ? t('Sync needs a look') : MOBILE ? t('Synced with your server') : t('Account, devices and sync'),
-    }
-    : MOBILE ? { title: t('This phone'), sub: t('All data stays on this phone') }
-    : { title: t('Guest'), sub: t('Your data lives on this device. Sign in to sync.') }
-  const initial = user && !DEMO ? String(user.name || '?').trim().charAt(0).toUpperCase() : null
+  // HarmonyOS edition (v1.2.0): the top card is the person, not the phone. "This phone" goes
+  // away entirely — the card becomes the Personal information entry, shows the custom nickname
+  // and photo, and opens the profile page. Other builds keep the account card as it was.
+  const S = useStore(s => s.S)
+  const profileName = String(S?.profileName || '').trim()
+  const profileInitial = profileName ? profileName.charAt(0).toUpperCase() : null
+  const acct = HARMONY
+    ? { title: profileName || t('Personal information'), sub: t('Nickname, photo and body metrics') }
+    : DEMO ? { title: t('Demo'), sub: t('Example data, only in this browser.') }
+      : user ? {
+        title: user.name || t('Account'),
+        sub: sync && sync.status && sync.status !== 'ok' ? t('Sync needs a look') : MOBILE ? t('Synced with your server') : t('Account, devices and sync'),
+      }
+        : MOBILE ? { title: t('This phone'), sub: t('All data stays on this phone') }
+          : { title: t('Guest'), sub: t('Your data lives on this device. Sign in to sync.') }
+  const initial = HARMONY ? profileInitial
+    : user && !DEMO ? String(user.name || '?').trim().charAt(0).toUpperCase() : null
   const nav = useNavigate()
   // Only while the server offers the Coach (the flag every Coach screen reads): on a box without
   // it the admin dashboard has no Coach card to land on.
@@ -1341,8 +1349,11 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
       ))}
     </Section> : <div className="sp-empty">{t('No setting matches “{0}”.', q.trim())}</div>) : <>
       <Section>
-        <button className="lrow tap sp-acct" data-tour="settings-account" onClick={() => open('account')}>
-          <span className={'sp-avatar' + (initial ? ' on' : '')} aria-hidden="true">{initial || <Icon name="personCircle" />}</span>
+        <button className="lrow tap sp-acct" data-tour="settings-account" onClick={() => open(HARMONY ? 'profile' : 'account')}>
+          <span className={'sp-avatar' + (initial ? ' on' : '')} aria-hidden="true">
+            {HARMONY && S?.profileAvatar ? <img className="sp-avatar-img" src={S.profileAvatar} alt="" />
+              : initial || <Icon name="personCircle" />}
+          </span>
           <span className="lrow-m"><span className="lrow-t">{acct.title}</span><span className="lrow-s">{acct.sub}</span></span>
           <Icon name="chevronRight" className="lrow-c" />
         </button>

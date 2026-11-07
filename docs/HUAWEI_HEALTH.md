@@ -72,8 +72,12 @@ HUAWEI Health Kit 是系统能力，但要被第三方应用调用，仍需要�
 
 - **本机 Health Kit 仍需要 AGC 应用与权限审批 + 签名构建**，才能实际读写；本仓库不提供服务端实现、
   AGC 凭据或签名证书。
-- `HealthConnectPlugin.ets` 的字段映射（体重、训练记录的类型与单位）需对照目标 SDK 版本复核，
-  因为它是按 Health Service Kit 的公开接口结构写的脚手架，需在实际 DevEco 构建中验证。
+- `HealthConnectPlugin.ets` 已于 2026-11-07 对照本机 SDK 声明
+  （`sdk/default/hms/ets/api/@hms.health.store.d.ts`）重写并通过 DevEco 完整编译验证：
+  使用 `init` / `requestAuthorizations` / `getAuthorizations` / `readData` / `saveData` /
+  `deleteData` / `insertDataSource`，数据类型取自 `healthStore.healthDataTypes`，时间单位为
+  **毫秒**。编译产物 `ets/modules.abc` 中已确认包含该插件。
+  早期按公开接口结构猜测的 `healthDataTypes` / `healthPermission` Kit 顶层导出与纳秒换算均已移除。
 - 步数、心率、睡眠只展示最近一次同步的数值，不画趋势图，也不参与训练建议。
 - BMI 采用中国成人标准（18.5 / 24 / 28），WHO 标准（18.5 / 25 / 30）在界面脚注中说明；
   基础代谢率为 Mifflin–St Jeor 估算，均不构成医疗建议。

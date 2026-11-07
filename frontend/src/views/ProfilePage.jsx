@@ -8,48 +8,133 @@
 // Data lives in the profile state, next to what the app already keeps: S.sex and S.birthYear are
 // the ones the strength levels read, and the weigh-in history (S.bodyweight) is the source of
 // truth for weight. New fields here never shadow those.
+//
+// v1.2.0: the "Your details" fields no longer draw a full-width input each. They are one row per
+// fact, with a compact value whose width is tied to the "Body mass index" label above, and the
+// number is typed in a sheet with its own h3 heading. Health services and weigh-in logging moved
+// to Settings → Integrations; this page is about the person (name, photo, body).
 
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Section, Row, Button, Segmented } from '../components/ui.jsx'
+import React, { useRef, useState } from 'react'
+import { Section, Row, Button, TextField } from '../components/ui.jsx'
 import { t } from '../lib/i18n.js'
-import { addWeighIn, dayOf, timeOf } from '../lib/weigh-ins.js'
+import { useUI } from '../store/useUI.js'
+import Icon from '../components/Icon.jsx'
 import {
   bmiOf, bandOf, gaugePct, healthyRange, ageOf, bmrOf,
   toKg, fromKg, heightCm, bodyFatPct, birthYear, latestWeight,
 } from '../lib/body-metrics.js'
 
 const num = (v, fallback = '') => (v === null || v === undefined || Number.isNaN(v) ? fallback : String(v))
+const sheet = render => useUI.getState().openSheet(render)
 
-/** A Harmony-style numeric field; the value is committed on blur, not on every keystroke. */
-function NumberField({ label, value, unit, min, max, step = 'any', placeholder, onCommit }) {
-  const shown = num(value)
-  const [draft, setDraft] = useState(shown)
-  const [editing, setEditing] = useState(false)
-  // Follow the stored value when a sync or another field changes it, but never overwrite what
-  // the person is typing.
-  useEffect(() => { if (!editing) setDraft(shown) }, [shown, editing])
-  const commit = () => {
-    setEditing(false)
+/* A sheet with its own third-level heading: the number is typed here, not in a field that
+   stretches across the whole page. Shared by every numeric row and by the nickname sheet. */
+function NumberSheet({ title, value, unit, min, max, step = 'any', onCommit, close, lead }) {
+  const [draft, setDraft] = useState(num(value))
+  const [problem, setProblem] = useState('')
+  const save = () => {
     const raw = String(draft).trim()
     const n = raw === '' ? null : Number(raw)
-    const ok = n === null || (Number.isFinite(n) && n >= min && n <= max)
-    if (!ok) { setDraft(shown); return }
+    if (n !== null && (!Number.isFinite(n) || n < min || n > max)) {
+      setProblem(t('Enter a number between {0} and {1}.', min, max))
+      return
+    }
     onCommit(n)
+    close()
   }
-  return <label className="hm-field">
-    <span className="hm-field-l">{label}</span>
-    <span className="hm-field-box">
-      <input className="hm-input" type="number" inputMode="decimal" min={min} max={max} step={step}
-        value={draft} placeholder={placeholder || '—'} aria-label={label}
-        onChange={e => setDraft(e.target.value)} onFocus={() => setEditing(true)} onBlur={commit}
-        onKeyDown={e => { if (e.key === 'Enter') e.currentTarget.blur() }} />
+  return <>
+    <h3 className="hm-sheet-h">{title}</h3>
+    <p className="hm-sheet-lead">{lead || t('Type a number, then save.')}</p>
+    <div className="hm-sheet-field">
+      <TextField type="number" inputMode="decimal" min={min} max={max} step={step}
+        value={draft} placeholder="—" aria-label={title} autoFocus
+        onChange={e => { setDraft(e.target.value); setProblem('') }} />
       {unit && <span className="hm-unit">{unit}</span>}
-    </span>
-  </label>
+    </div>
+    {problem && <p className="hm-sheet-problem" role="alert">{problem}</p>}
+    <div className="hm-sheet-btns">
+      <Button variant="plain" onClick={close}>{t('Cancel')}</Button>
+      <Button variant="primary" onClick={save}>{t('Save')}</Button>
+    </div>
+  </>
 }
 
-export default function ProfilePage({ S, update, toast }) {
+/** One fact per row: label on the left, a compact value on the right. */
+function NumberRow({ label, value, unit, min, max, step, onCommit }) {
+  const shown = num(value)
+  const open = () => sheet(close => <NumberSheet title={label} value={value} unit={unit}
+    min={min} max={max} step={step} onCommit={onCommit} close={close} />)
+  return <div className="hm-row">
+    <span className="hm-row-l">{label}</span>
+    <button type="button" className="hm-value" onClick={open} aria-label={label}>
+      <span>{shown || '—'}</span>{shown && unit ? <span className="hm-unit">{unit}</span> : null}
+    </button>
+  </div>
+}
+
+function ChoiceSheet({ title, options, value, onCommit, close }) {
+  return <>
+    <h3 className="hm-sheet-h">{title}</h3>
+    <div className="hm-choice">
+      {options.map(o => <button key={o.value} type="button" className={'lrow tap hm-choice-row' + (String(value) === String(o.value) ? ' on' : '')}
+        onClick={() => { onCommit(o.value); close() }}>
+        <span className="lrow-m"><span className="lrow-t">{o.label}</span></span>
+      </button>)}
+    </div>
+    <div className="hm-sheet-btns"><Button variant="plain" onClick={close}>{t('Cancel')}</Button></div>
+  </>
+}
+
+function ChoiceRow({ label, value, options, onCommit }) {
+  const current = options.find(o => String(o.value) === String(value))
+  const open = () => sheet(close => <ChoiceSheet title={label} options={options} value={value} onCommit={onCommit} close={close} />)
+  return <div className="hm-row">
+    <span className="hm-row-l">{label}</span>
+    <button type="button" className="hm-value" onClick={open} aria-label={label}>{current?.label || '—'}</button>
+  </div>
+}
+
+function NameSheet({ value, onCommit, close }) {
+  const [draft, setDraft] = useState(value || '')
+  return <>
+    <h3 className="hm-sheet-h">{t('Nickname')}</h3>
+    <p className="hm-sheet-lead">{t('Shown at the top of Settings.')}</p>
+    <div className="hm-sheet-field">
+      <TextField value={draft} maxLength={24} placeholder={t('Your nickname')} aria-label={t('Nickname')}
+        autoFocus onChange={e => setDraft(e.target.value)} />
+    </div>
+    <div className="hm-sheet-btns">
+      <Button variant="plain" onClick={close}>{t('Cancel')}</Button>
+      <Button variant="primary" onClick={() => { onCommit(draft.trim()); close() }}>{t('Save')}</Button>
+    </div>
+  </>
+}
+
+/* A square, small JPEG: the photo travels with the profile's JSON backup and with sync, so a
+   160 px crop keeps it to a few KB instead of a multi-MB camera original. */
+function shrinkPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('read'))
+    reader.onload = () => {
+      const img = new Image()
+      img.onerror = () => reject(new Error('decode'))
+      img.onload = () => {
+        const size = 160
+        const side = Math.min(img.width, img.height) || size
+        const canvas = document.createElement('canvas')
+        canvas.width = canvas.height = size
+        canvas.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2,
+          side, side, 0, 0, size, size)
+        resolve(canvas.toDataURL('image/jpeg', 0.82))
+      }
+      img.src = String(reader.result)
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+export default function ProfilePage({ S, update }) {
   const unit = S.unit === 'lb' ? 'lb' : 'kg'
   const recorded = latestWeight(S)
   // The weight used for BMI: one typed here wins over the last weigh-in, but the weigh-in is the
@@ -65,7 +150,6 @@ export default function ProfilePage({ S, update, toast }) {
   const target = S.targetWeight ?? null
   const gap = target === null || weight === null ? null : Math.round((Number(weight) - Number(target)) * 10) / 10
 
-  const nav = useNavigate()
   const set = (key, parse) => v => update(s => {
     const clean = parse ? parse(v) : v
     if (clean === null || clean === undefined || clean === '') delete s[key]
@@ -77,14 +161,32 @@ export default function ProfilePage({ S, update, toast }) {
   const setWeight = set('profileWeight')
   const setTarget = set('targetWeight')
 
-  const saveWeighIn = () => {
-    const w = Number(weight)
-    if (!Number.isFinite(w) || w <= 0) { toast?.(t('Enter a weight first.')); return }
-    update(s => addWeighIn(s, { d: dayOf(Date.now()), at: timeOf(Date.now()), w }))
-    toast?.(t('Weigh-in saved'))
+  const name = String(S.profileName || '').trim()
+  const initial = name ? name.charAt(0).toUpperCase() : null
+  const fileRef = useRef(null)
+  const editName = () => sheet(close => <NameSheet value={name} onCommit={set('profileName')} close={close} />)
+  const onPhoto = async e => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    try { set('profileAvatar')(await shrinkPhoto(file)) }
+    catch { /* a photo the WebView could not decode: keep the previous one */ }
   }
 
   return <div className="hm-page">
+    {/* The identity this fork's Settings root points at: nickname and photo, both editable. */}
+    <section className="hm-id" aria-label={t('Personal information')}>
+      <button type="button" className="hm-avatar" onClick={() => fileRef.current?.click()} aria-label={t('Change photo')}>
+        {S.profileAvatar ? <img src={S.profileAvatar} alt="" />
+          : initial ? <span>{initial}</span> : <Icon name="personCircle" />}
+      </button>
+      <button type="button" className="hm-id-m" onClick={editName}>
+        <span className="hm-id-name">{name || t('Set a nickname')}</span>
+        <span className="hm-id-sub">{t('Tap to change your nickname and photo')}</span>
+      </button>
+      <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPhoto} />
+    </section>
+
     <section className="hm-hero" aria-label={t('Body mass index')}>
       <div className="hm-hero-head">
         <span className="hm-hero-label">{t('Body mass index')}</span>
@@ -105,21 +207,18 @@ export default function ProfilePage({ S, update, toast }) {
     </section>
 
     <Section title={t('Your details')}>
-      <div className="hm-fields">
-        <NumberField label={t('Height')} unit="cm" min={50} max={260} value={S.heightCm ?? null} onCommit={setHeight} />
-        <NumberField label={t('Weight')} unit={unit} min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
+      <div className="hm-rows">
+        <NumberRow label={t('Height')} unit="cm" min={50} max={260} value={S.heightCm ?? null} onCommit={setHeight} />
+        <NumberRow label={t('Weight')} unit={unit} min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
           value={weight} onCommit={setWeight} />
-        <div className="hm-field">
-          <span className="hm-field-l">{t('Sex')}</span>
-          <Segmented className="seg-inline" value={S.sex === 'female' || S.sex === 'male' ? S.sex : ''}
-            options={[{ value: 'male', label: t('Male') }, { value: 'female', label: t('Female') }]}
-            onChange={v => set('sex')(v)} />
-        </div>
-        <NumberField label={t('Birth year')} min={1900} max={new Date().getFullYear()} step="1"
+        <ChoiceRow label={t('Sex')} value={S.sex === 'female' || S.sex === 'male' ? S.sex : ''}
+          options={[{ value: 'male', label: t('Male') }, { value: 'female', label: t('Female') }]}
+          onCommit={set('sex')} />
+        <NumberRow label={t('Birth year')} min={1900} max={new Date().getFullYear()} step="1"
           value={S.birthYear ?? null} onCommit={set('birthYear', birthYear)} />
-        <NumberField label={t('Target weight')} unit={unit} min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
+        <NumberRow label={t('Target weight')} unit={unit} min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
           value={target} onCommit={setTarget} />
-        <NumberField label={t('Body fat')} unit="%" min={3} max={70}
+        <NumberRow label={t('Body fat')} unit="%" min={3} max={70}
           value={S.bodyFatPct ?? null} onCommit={set('bodyFatPct', bodyFatPct)} />
       </div>
     </Section>
@@ -133,11 +232,6 @@ export default function ProfilePage({ S, update, toast }) {
         value={bmr === null ? '—' : `${bmr} ${t('kcal/day')}`} />
       <Row icon="flag" iconTint="var(--purple)" title={t('To target')}
         value={gap === null ? '—' : gap > 0 ? t('{0} {1} to go', Math.abs(gap), unit) : t('Target reached')} />
-    </Section>
-
-    <Section footer={t('Weight saved here is used for BMI. Add it to your weight history to see it on the charts too.')}>
-      <Button className="hm-btn" onClick={saveWeighIn}>{t('Save weigh-in')}</Button>
-      <Button className="hm-btn ghost" onClick={() => nav('/settings/health-connect')}>{t('Huawei Health')}</Button>
     </Section>
   </div>
 }
