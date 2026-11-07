@@ -9,10 +9,12 @@
 // the ones the strength levels read, and the weigh-in history (S.bodyweight) is the source of
 // truth for weight. New fields here never shadow those.
 //
-// v1.2.0: the "Your details" fields no longer draw a full-width input each. They are one row per
-// fact, with a compact value whose width is tied to the "Body mass index" label above, and the
-// number is typed in a sheet with its own h3 heading. Health services and weigh-in logging moved
+// v1.2.0: the "Your details" fields no longer draw a full-width input each: one row per fact,
+// the number typed in a sheet with its own h3 heading. Health services and weigh-in logging moved
 // to Settings → Integrations; this page is about the person (name, photo, body).
+// v1.2.1: "Your details" and "Derived" now share the exact same Row geometry — 29px icon rail,
+// 11/14px padding, 46px min-height, body-sized title, right-aligned value and the same hairline
+// start — with a small tinted icon per field. The value is plain text, so no input can be too wide.
 
 import React, { useRef, useState } from 'react'
 import { Section, Row, Button, TextField } from '../components/ui.jsx'
@@ -59,17 +61,16 @@ function NumberSheet({ title, value, unit, min, max, step = 'any', onCommit, clo
   </>
 }
 
-/** One fact per row: label on the left, a compact value on the right. */
-function NumberRow({ label, value, unit, min, max, step, onCommit }) {
+/* One fact per row, drawn with the very same Row the Derived section uses: the same 29px icon
+   rail, 11/14px padding, 46px min-height, body-sized title, right-aligned value and hairline
+   that starts after the icon rail. The value is plain text, not a field, so it can never stretch
+   across the page; --acc-ink is the only hint that the whole row is editable. */
+function NumberRow({ icon, iconTint, label, value, unit, min, max, step, onCommit }) {
   const shown = num(value)
   const open = () => sheet(close => <NumberSheet title={label} value={value} unit={unit}
     min={min} max={max} step={step} onCommit={onCommit} close={close} />)
-  return <div className="hm-row">
-    <span className="hm-row-l">{label}</span>
-    <button type="button" className="hm-value" onClick={open} aria-label={label}>
-      <span>{shown || '—'}</span>{shown && unit ? <span className="hm-unit">{unit}</span> : null}
-    </button>
-  </div>
+  return <Row icon={icon} iconTint={iconTint} title={label} className="hm-lrow"
+    value={shown ? (unit ? `${shown} ${unit}` : shown) : '—'} onClick={open} />
 }
 
 function ChoiceSheet({ title, options, value, onCommit, close }) {
@@ -85,13 +86,11 @@ function ChoiceSheet({ title, options, value, onCommit, close }) {
   </>
 }
 
-function ChoiceRow({ label, value, options, onCommit }) {
+function ChoiceRow({ icon, iconTint, label, value, options, onCommit }) {
   const current = options.find(o => String(o.value) === String(value))
   const open = () => sheet(close => <ChoiceSheet title={label} options={options} value={value} onCommit={onCommit} close={close} />)
-  return <div className="hm-row">
-    <span className="hm-row-l">{label}</span>
-    <button type="button" className="hm-value" onClick={open} aria-label={label}>{current?.label || '—'}</button>
-  </div>
+  return <Row icon={icon} iconTint={iconTint} title={label} className="hm-lrow"
+    value={current?.label || '—'} onClick={open} />
 }
 
 function NameSheet({ value, onCommit, close }) {
@@ -206,21 +205,26 @@ export default function ProfilePage({ S, update }) {
       <p className="hm-hero-note">{t('BMI uses the Chinese adult standard (18.5 / 24 / 28). The WHO bands are 18.5 / 25 / 30.')}</p>
     </section>
 
+    {/* The same Row geometry and icon rail as Derived below, so the two sections read as one
+        list. Tapping a row still opens its own h3 sheet — only the frame around the value went. */}
     <Section title={t('Your details')}>
-      <div className="hm-rows">
-        <NumberRow label={t('Height')} unit="cm" min={50} max={260} value={S.heightCm ?? null} onCommit={setHeight} />
-        <NumberRow label={t('Weight')} unit={unit} min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
-          value={weight} onCommit={setWeight} />
-        <ChoiceRow label={t('Sex')} value={S.sex === 'female' || S.sex === 'male' ? S.sex : ''}
-          options={[{ value: 'male', label: t('Male') }, { value: 'female', label: t('Female') }]}
-          onCommit={set('sex')} />
-        <NumberRow label={t('Birth year')} min={1900} max={new Date().getFullYear()} step="1"
-          value={S.birthYear ?? null} onCommit={set('birthYear', birthYear)} />
-        <NumberRow label={t('Target weight')} unit={unit} min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
-          value={target} onCommit={setTarget} />
-        <NumberRow label={t('Body fat')} unit="%" min={3} max={70}
-          value={S.bodyFatPct ?? null} onCommit={set('bodyFatPct', bodyFatPct)} />
-      </div>
+      <NumberRow icon="ruler" iconTint="var(--blue)" label={t('Height')} unit="cm"
+        min={50} max={260} value={S.heightCm ?? null} onCommit={setHeight} />
+      <NumberRow icon="scale" iconTint="var(--teal)" label={t('Weight')} unit={unit}
+        min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
+        value={weight} onCommit={setWeight} />
+      <ChoiceRow icon="personCircle" iconTint="var(--indigo)" label={t('Sex')}
+        value={S.sex === 'female' || S.sex === 'male' ? S.sex : ''}
+        options={[{ value: 'male', label: t('Male') }, { value: 'female', label: t('Female') }]}
+        onCommit={set('sex')} />
+      <NumberRow icon="calendar" iconTint="var(--orange)" label={t('Birth year')}
+        min={1900} max={new Date().getFullYear()} step="1"
+        value={S.birthYear ?? null} onCommit={set('birthYear', birthYear)} />
+      <NumberRow icon="star" iconTint="var(--green)" label={t('Target weight')} unit={unit}
+        min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
+        value={target} onCommit={setTarget} />
+      <NumberRow icon="gauge" iconTint="var(--purple)" label={t('Body fat')} unit="%"
+        min={3} max={70} value={S.bodyFatPct ?? null} onCommit={set('bodyFatPct', bodyFatPct)} />
     </Section>
 
     <Section title={t('Derived')} footer={t('BMI and BMR are estimates, not medical advice.')}>
