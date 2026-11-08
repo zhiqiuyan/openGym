@@ -26,12 +26,19 @@
 
 HUAWEI Health Kit 是系统能力，但要被第三方应用调用，仍需要在华为侧完成开发者配置：
 
-1. 在华为开发者联盟 / AppGallery Connect 创建应用，拿到 **App ID（client_id）**。
-2. 为该应用**开通 Health Service Kit（Health Kit）**，并申请所需数据权限且通过审核
-   （体重、身高、心率、步数、睡眠、运动记录等读写权限）。
-3. 在 `module.json5` 声明健康权限（`ohos.permission.health.READ_HEALTH_DATA`、
-   `ohos.permission.health.WRITE_HEALTH_DATA`）以及所使用的数据类型。
-4. 在 DevEco Studio 中对应用完成**签名**并构建；Health Kit 在签名与 AGC 配置齐全时才会放行。
+1. 在华为开发者联盟 / AppGallery Connect 用**应用包名**创建应用，包名须与
+   `AppScope/app.json5` 的 `bundleName` 一致（当前 `ch.duartesantos.opengym` 属上游作者，
+   AGC 包名全局唯一，建议改为自有包名）。
+2. 为该应用**申请 Health Service Kit 服务**并勾选所需数据权限 scopes，提交材料等待人工审核
+   （约 15 个工作日）。审批通过后进入「已开通测试权限」阶段：限前 100 位用户、开通 24 小时后生效。
+   个人开发者只能申请身高、体重、步数、距离、热量、锻炼记录等基础数据；**心率、睡眠、血压、
+   血氧等敏感数据不面向个人开发者开放**（需企业开发者资质）。
+3. 从 AGC 取 **OAuth 2.0 Client ID**（注意不是 APP ID），在 `entry/src/main/module.json5` 的
+   `metadata` 中配置 `client_id`；并在 AGC 登记应用签名证书的**公钥指纹**，本地签名证书必须与之
+   一致。Health Service Kit **没有** `ohos.permission.health.READ_HEALTH_DATA` 这类权限声明，
+   数据访问范围是「AGC 批准的 scopes ∩ 用户授权」的交集。
+4. 在 DevEco Studio 登录华为开发者账号、连接真机完成**自动签名**（或手动签名并注册设备 UDID），
+   安装后由 `requestAuthorizations` 弹出 HUAWEI ID 登录/授权页，用户勾选同意后才能读写。
    本仓库发布的 HAP 是未签名包，真机部署前需自行签名。
 
 > 没有这些配置时，原生插件会拒绝调用，`lib/health-sync.js` 把健康后端视为「不可用」，
