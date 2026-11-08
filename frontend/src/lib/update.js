@@ -12,7 +12,11 @@
 import { MOBILE } from './mobile.js'
 import { APK_VARIANTS, APK_VARIANT } from './apk-variant.js'
 
-const REPO = 'DuarteSantos8/openGym'
+// The HarmonyOS edition has its own fork, version line and release tags (harmony-vX.Y.Z),
+// independent of the upstream Android APK channel. Its HAPs are unsigned, so there is no
+// in-app sideload: an available update opens the releases page instead of downloading one.
+const HARMONY = import.meta.env.VITE_HARMONY === '1'
+const REPO = HARMONY ? 'zhiqiuyan/openGym' : 'DuarteSantos8/openGym'
 const LATEST_URL = `https://api.github.com/repos/${REPO}/releases/latest`
 export const RELEASES_PAGE = `https://github.com/${REPO}/releases/latest`
 
@@ -61,7 +65,7 @@ async function fetchLatest() {
   if (res.status === 404) return { hasUpdate: false, latestVersion: __APP_VERSION__, apkUrl: null, hashUrl: null }
   if (!res.ok) throw new Error(`GitHub API ${res.status}`)
   const latest = await res.json()
-  const latestVersion = String(latest.tag_name || '').replace(/^v/, '')
+  const latestVersion = String(latest.tag_name || '').replace(/^harmony-v/, '').replace(/^v/, '')
   if (!latestVersion) return { hasUpdate: false, latestVersion: __APP_VERSION__, apkUrl: null, hashUrl: null }
   const hasUpdate = compareSemver(latestVersion, __APP_VERSION__) > 0
   const { apk, hash } = pickApk(latest.assets || [])

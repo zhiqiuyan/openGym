@@ -3,9 +3,9 @@
     "bundleName": "ch.duartesantos.opengym",
     "vendor": "openGym",
     // HarmonyOS edition has its own version line, independent of the Android/web releases.
-    "versionCode": 10003,
-    "versionName": "1.1.0",
-    "buildVersion": "4",
+    "versionCode": 10004,
+    "versionName": "1.1.1",
+    "buildVersion": "5",
     "icon": "$media:layered_image",
     "label": "$string:app_name"
   }

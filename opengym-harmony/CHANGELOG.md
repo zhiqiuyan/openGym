@@ -8,6 +8,15 @@
 Release 附件名带版本号，另附 `.sha256` 与 `SHA256SUMS`。`/releases/latest` 始终指向最新版，
 应用内「检查更新」与仓库 README 都用这个地址，发新版无需改代码。
 
+## 1.1.1 (2026-11-09)
+
+- 完整原生编译：`HealthConnectPlugin.ets` 按本机 Health Service Kit 声明重写并编入 `ets/modules.abc`，取代 1.1.0 的 rawfile 重打包版
+- 个人信息：入口置顶替代「这部手机」，支持昵称与头像；「华为运动健康」「记录称重」移入一级菜单「集成」；基本信息改为三级标题弹窗输入
+- UI 一致性：基本信息与派生指标统一标准 Row 尺寸、小图标与文字边距；二级菜单卡片配色与一级菜单统一（`var(--surface)`）
+- 应用图标：分层图标主体由占画布 38.7% 等比放大至 61.8%（官方《应用图标》V17「图形网格」方向）
+- 工程：`opengym-harmony/` 原生工程源码纳入仓库，附 `.gitignore` 与 `local.properties.example`；README 增加复现构建章节
+- 文档：更正 Health Kit 接入前置条件（AGC scopes / client_id / 公钥指纹 / HUAWEI ID 授权）与 HAP 打包说明
+
 ## 1.1.0 (2026-11-06)
 
 - 新增个人信息管理（身高/体重/BMI/健康体重范围/基础代谢率，鸿蒙 7.0 风格）

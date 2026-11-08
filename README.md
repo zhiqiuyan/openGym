@@ -31,7 +31,7 @@
 | 仓库性质 | 公开 fork；与上游作者及 Gym visual 无隶属或背书关系 |
 | 默认分支 | `harmony`（发版分支 = 上游主线 + 鸿蒙版补丁集） |
 | `main` | 上游 `main` 的**纯镜像**，逐提交快进，内容与上游一致 |
-| 当前鸿蒙版 | `1.1.0`（2026-11-07 完整原生编译版），独立的产品线与版本序列，自 `1.0.0` 起 |
+| 当前鸿蒙版 | `1.1.1`（2026-11-09），独立的产品线与版本序列，自 `1.0.0` 起 |
 | 许可证 | GNU AGPL v3.0；动作媒体另有单独授权限制（见[版权与许可](#版权与许可)） |
 
 ## 下载与安装
@@ -43,14 +43,14 @@
 | Android | 上游 [Release 中的签名 APK](https://github.com/DuarteSantos8/openGym/releases/latest) | 上游 |
 | Web / 自托管 | 上游的 Docker Compose 部署 | 上游 |
 
-**当前版本 `1.1.0`（2026-11-07 完整原生编译版）**
+**当前版本 `1.1.1`（2026-11-09）**
 
-- `versionName 1.1.0` · `versionCode 10003` · `buildVersion 4`
-- 文件 `openGym-Harmony-1.1.0-20261107-native-unsigned.hap`，233,985,407 字节（含内置动作媒体）
-- SHA256 `af0887921f5b9de5ccf47d7ae5e35ef157e46f81c9a71612e21718df3a6f8c28`
-- 同批附件：`.sha256` 单文件校验、`SHA256SUMS` 汇总校验、`release-notes-1.1.0-native.md` 发布说明
-- 该版由 hvigor 完整编译，`ets/modules.abc` 已包含原生 `HealthConnectPlugin`；2026-11-06 的
-  rawfile 重打包版（233,959,011 字节）已被取代，请勿再使用。
+- `versionName 1.1.1` · `versionCode 10004` · `buildVersion 5`
+- 文件 `openGym-Harmony-1.1.1-20261109-unsigned.hap`，233,985,515 字节（含内置动作媒体）
+- SHA256 `64e542f1c7c007d3d4b44078e130eae3e87d5e6421d1f8b9522c12d5c22d539e`
+- 同批附件：`.sha256` 单文件校验、`SHA256SUMS` 汇总校验、`release-notes-1.1.1.md` 发布说明
+- 本版为独立 Release `harmony-v1.1.1`；`harmony-v1.1.0` 及更早的附件保持不变，不再覆盖。
+  `ets/modules.abc` 含原生 `HealthConnectPlugin`，`versionCode` 严格递增，可直接覆盖安装。
 
 下载后建议先校验完整性：
 
@@ -59,7 +59,7 @@ sha256sum -c SHA256SUMS
 ```
 
 ```powershell
-(Get-FileHash .\openGym-Harmony-1.1.0-20261107-native-unsigned.hap -Algorithm SHA256).Hash
+(Get-FileHash .\openGym-Harmony-1.1.1-20261109-unsigned.hap -Algorithm SHA256).Hash
 ```
 
 安装包文件名以 `-unsigned` 结尾，部署到真机前需按 HarmonyOS 平台要求完成签名（本仓库不提供签名证书）。
@@ -79,6 +79,7 @@ sha256sum -c SHA256SUMS
 - **设置页两级配色统一**：撤销浅色主题下二级页卡片「融入背景」的旧覆盖，分组卡片统一使用 `var(--surface)`、个人信息卡片使用 `var(--surface-raised)`，与一级菜单一致；深色主题未改动。
 - **应用图标黄金比例**：桌面分层图标的杠铃主体由占画布 38.7% 等比放大至 61.8%，保持居中与四角安全余量（官方《应用图标》V17「图形网格」要求）；PWA 图标原占比 0.688，保持原样。
 - **基本信息与派生指标统一**：「个人信息 → 基本信息」改用与「派生指标」相同的标准行（29px 带色小图标、11/14px 内边距、46px 行高、正文标题、右对齐值与同一分隔线起点），数值为纯文本、整行点击弹窗输入，两块尺寸与文字边距不再漂移。
+- **独立更新检查**：应用内「检查更新」查询本仓库 `/releases/latest` 并正确解析 `harmony-vX.Y.Z` 标签，与上游 Android APK 的自更新渠道相互独立。
 - **主页标题**：主页面左上角标题由 `openGym` 改为「开放健身房」。
 
 ## 鸿蒙原生工程
