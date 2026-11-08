@@ -1,0 +1,9 @@
+{
+  "name": "entry",
+  "version": "1.4.3",
+  "description": "openGym 鸿蒙版的入口模块。",
+  "main": "",
+  "author": "",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": {}
+}

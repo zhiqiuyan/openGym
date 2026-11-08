@@ -81,6 +81,27 @@ sha256sum -c SHA256SUMS
 - **基本信息与派生指标统一**：「个人信息 → 基本信息」改用与「派生指标」相同的标准行（29px 带色小图标、11/14px 内边距、46px 行高、正文标题、右对齐值与同一分隔线起点），数值为纯文本、整行点击弹窗输入，两块尺寸与文字边距不再漂移。
 - **主页标题**：主页面左上角标题由 `openGym` 改为「开放健身房」。
 
+## 鸿蒙原生工程
+
+`opengym-harmony/` 是 HarmonyOS 版的 DevEco Studio 原生工程（ArkTS 插件、ArkWeb 容器、Capacitor 兼容层），与前端源码同在 `harmony` 分支。目录只收录工程源码与构建脚本；以下内容不入库：
+
+- `entry/src/main/resources/rawfile/`：前端 bundle 与动作媒体，由 `tools/sync-web.mjs` 从 `frontend/dist` 与 `catalogue/media` 生成；动作媒体另有授权限制（见 `NOTICE.md`）。
+- `node_modules/`、`build/`、`.hvigor/`、`local.properties`（含本机 SDK 路径）与翻译中间数据。
+
+复现构建：
+
+```bash
+# 1) 前端产物
+cd frontend && VITE_MOBILE=1 VITE_HARMONY=1 npm run build
+# 2) 同步 rawfile（含动作媒体）
+cd ../opengym-harmony && node tools/sync-web.mjs --no-build
+# 3) 编译 HAP（需 DevEco Studio 自带 JDK / Node / SDK）
+export DEVECO_SDK_HOME="<DevEco Studio>/sdk"   # 必须是 sdk 根，不能是 sdk/default
+node hvigorw.js assembleHap
+```
+
+SDK 路径模板见 `opengym-harmony/local.properties.example`；命令行 hvigor 构建要求纯 ASCII 工程路径，且该版本不接受 `--mode debug`。安装包与校验值见[最新 Release](https://github.com/zhiqiuyan/openGym/releases/latest)。
+
 ## 版本与发版
 
 - 独立版本序列（semver），与上游 `1.4.x` 不共享版本号，但共享迭代节奏：每次上游同步或自有修复 → `patch`；成片新功能 → `minor`；不兼容改动 → `major`。

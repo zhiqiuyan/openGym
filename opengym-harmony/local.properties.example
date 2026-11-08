@@ -1,0 +1,8 @@
+# Copy this file to local.properties for DevEco Studio's IDE.
+# Replace the path with your own SDK location (Windows uses forward slashes).
+sdk.dir=<DevEco Studio>/sdk/default
+
+# Command-line hvigor builds instead read DEVECO_SDK_HOME, which must point at
+# the SDK ROOT (.../sdk), NOT .../sdk/default, or the build fails with 00303312.
+#   export DEVECO_SDK_HOME="C:/Program Files/Huawei/DevEco Studio/sdk"
+#   node hvigorw.js assembleHap

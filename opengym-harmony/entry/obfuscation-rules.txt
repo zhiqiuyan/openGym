@@ -1,0 +1,10 @@
+# Obfuscation rules for the release build.
+#
+# The app's own code is small and the obfuscation is off for now; this file exists because the
+# release build profile points at it. Add rules here when the obfuscation is turned on.
+-enable-property-obfuscation
+-enable-toplevel-obfuscation
+-keep-global-name
+  *
+-keep-property-name
+  *

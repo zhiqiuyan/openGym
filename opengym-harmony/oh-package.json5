@@ -1,0 +1,8 @@
+{
+  "modelVersion": "6.0.0",
+  "name": "opengym-harmony",
+  "version": "1.4.3",
+  "description": "openGym 的鸿蒙版：一个开源的健身与体重记录工具。",
+  "dependencies": {},
+  "devDependencies": {}
+}

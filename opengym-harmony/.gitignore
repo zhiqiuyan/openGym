@@ -1,0 +1,17 @@
+# HarmonyOS native project: generated and machine-local content is not source.
+node_modules/
+oh_modules/
+build/
+.hvigor/
+_old_assets_backup/
+entry/build/
+entry/oh_modules/
+# rawfile is produced by tools/sync-web.mjs from frontend/dist + catalogue/media.
+# The exercise media are licensed for in-app use only (see NOTICE.md).
+entry/src/main/resources/rawfile/
+local.properties
+*.log
+# Translation work data (only the scripts in tools/ are source).
+tools/*.json
+tools/zh-batches/
+tools/*_corpus/
