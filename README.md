@@ -129,7 +129,7 @@ VITE_MOBILE=1 VITE_HARMONY=1 npm run build
 
 `VITE_HARMONY=1` 时，Vite 会把 `@capacitor/*` 别名到 `frontend/src/lib/harmony/*` 桥接层，并从鸿蒙清单读取版本号。校验命令：`node scripts/check-locales.mjs`（语言包键集合）、`npx vitest run`（前端测试）。
 
-**HAP 打包无法仅凭本仓库源码复现**：还需要鸿蒙原生工程与 DevEco Studio / hvigor，而该工程目前未随仓库发布。其流程是把前端 `dist` 与动作媒体同步进 `entry/src/main/resources/rawfile` 后打包，且包内 `module.json` 与 `pack.info` 的版本字段必须与 `app.json5` 一致。请直接使用 Release 附件。
+**HAP 打包**：仓库已包含 `opengym-harmony/` 原生工程源码（ArkTS、构建配置与 `tools/sync-web.mjs`）。按[鸿蒙原生工程](#鸿蒙原生工程)章节的三步流程即可复现：构建前端 `dist` → 同步进 `entry/src/main/resources/rawfile`（含动作媒体）→ 用 DevEco Studio 自带工具链执行 `hvigorw.js assembleHap`。前端 `dist` 与动作媒体是生成物，不入库；包内 `module.json` 与 `pack.info` 的版本字段必须与 `app.json5` 一致。预编译 HAP 请直接使用 Release 附件。
 
 > [!NOTE]
 > 在 Windows 本地运行完整测试时，仍有若干与路径分隔符、CRLF、临时目录绝对路径、生成图标时间戳相关的用例失败；这些属于环境差异，建议在 Linux / CI 环境复核。
