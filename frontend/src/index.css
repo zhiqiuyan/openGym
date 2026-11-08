@@ -3280,9 +3280,11 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 /* Kept at the end of the sheet so they win over the cascade without touching upstream rules.
    `.sp-page` is put back on the settings sub-page wrapper in views/Settings.jsx: upstream
    renamed that wrapper to `.narrow`, and the old selector stopped matching after the sync. */
-/* In light mode the sub-page cards sit flush with the page background, so the inset groups
-   don't read as floating rectangles with a visible edge or shadow. */
-:root[data-theme="light"] .sp-page .sect-b{background:var(--bg) !important;box-shadow:none !important;border:0 !important}
+/* A settings sub-page uses the very same grouped-list card as the root page: --surface
+   (white in the light theme), the same radius and the same overflow clipping. An earlier
+   HarmonyOS pass made only the sub-page cards flush with the page background in light mode;
+   that made the two levels look different, so the override is gone. Light and dark themes
+   now resolve identically at both levels. */
 /* The about-page version and licence line is 13px text the user is asked to quote in bug
    reports; it takes the readable ink rather than the tertiary one on a light background. */
 :root[data-theme="light"] .sp-version{color:var(--label-2)}
@@ -3305,13 +3307,12 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 
 /* ---------------- Personal information & Huawei Health (HarmonyOS 7.0 language) ------------- */
 /* One calm hero card carrying the number that matters, grouped fields with generous spacing,
-   colour reserved for meaning. No card gets a border or a shadow in the light theme: the same
-   "flush with the page" rule the settings sub-pages use applies here too. Every type size is a
-   --fs-* token so the 1.4.5 design review keeps holding. */
+   colour reserved for meaning. Cards use --surface-raised — the same surface the settings
+   root's grouped lists use — so both levels read alike in light and dark themes. Every type
+   size is a --fs-* token so the 1.4.5 design review keeps holding. */
 .hm-page{display:grid;gap:22px;padding-bottom:8px}
 .hm-hero{display:grid;gap:10px;padding:20px 20px 18px;border-radius:20px;
   background:var(--surface-raised)}
-:root[data-theme="light"] .sp-page .hm-hero{background:var(--bg)}
 .hm-hero-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .hm-hero-label{font-size:var(--fs-subhead);color:var(--label-2)}
 .hm-hero-badge{font-size:var(--fs-footnote);font-weight:600;color:var(--on-acc);
@@ -3334,7 +3335,6 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .hm-field-l{font-size:var(--fs-footnote);color:var(--label-2)}
 .hm-field-box{display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:12px;
   background:var(--surface-raised)}
-:root[data-theme="light"] .sp-page .hm-field-box{background:var(--bg)}
 .hm-input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:var(--label);
   font-size:var(--fs-callout);font-family:inherit;font-variant-numeric:tabular-nums}
 .hm-input::placeholder{color:var(--label-3)}
@@ -3346,7 +3346,6 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
   border:0;padding:0;background:var(--surface-raised);color:var(--label-2);font-size:var(--fs-large);
   font-weight:600}
 .hm-avatar img{width:100%;height:100%;object-fit:cover}
-:root[data-theme="light"] .sp-page .hm-avatar{background:var(--bg)}
 .hm-id-m{flex:1;min-width:0;display:grid;gap:4px;text-align:start;background:transparent;border:0;padding:0;
   color:inherit;font-family:inherit}
 .hm-id-name{font-size:var(--fs-title3);font-weight:600;color:var(--label);overflow:hidden;
@@ -3379,7 +3378,6 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .hm-btn:disabled{opacity:.45}
 .hm-status{display:flex;align-items:center;gap:12px;padding:16px;border-radius:16px;
   background:var(--surface-raised)}
-:root[data-theme="light"] .sp-page .hm-status{background:var(--bg)}
 .hm-status-dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--label-3)}
 .hm-status.on .hm-status-dot{background:var(--green-ink)}
 .hm-status-m{display:grid;gap:3px}
@@ -3387,6 +3385,5 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .hm-status-s{font-size:var(--fs-footnote);color:var(--label-2)}
 .hm-notice{margin:0;padding:10px 14px;border-radius:12px;background:var(--surface-raised);
   font-size:var(--fs-footnote);line-height:var(--lh-small);color:var(--label-2)}
-:root[data-theme="light"] .sp-page .hm-notice{background:var(--bg)}
 .hm-notice.warn{color:var(--orange-ink)}
 .hm-note{margin:0;font-size:var(--fs-footnote);line-height:var(--lh-small);color:var(--label-2)}
