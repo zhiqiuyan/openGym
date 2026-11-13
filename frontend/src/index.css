@@ -3369,6 +3369,13 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .hm-sheet-problem{margin:8px 0 0;font-size:var(--fs-footnote);color:var(--red-ink)}
 .hm-sheet-btns{display:flex;gap:10px;margin-top:18px}
 .hm-sheet-btns .btn{flex:1;justify-content:center;min-height:44px}
+
+/* The live reading card inside the Bluetooth scale sheet. */
+.ble-live{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 0 2px}
+.ble-live-w{font-size:44px;font-weight:700;line-height:1.1;color:var(--label);font-variant-numeric:tabular-nums}
+.ble-live-u{font-size:var(--fs-title3);font-weight:600;margin-inline-start:6px;color:var(--label-2)}
+.ble-live-state{font-size:var(--fs-footnote);color:var(--label-2)}
+.ble-live-fat{font-size:var(--fs-callout);color:var(--teal-ink);font-variant-numeric:tabular-nums}
 .hm-choice{display:grid;gap:2px}
 .hm-choice-row.on .lrow-t{color:var(--acc-ink)}
 

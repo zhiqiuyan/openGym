@@ -25,6 +25,10 @@
       "value": "用于判断你是否在健身房附近，从而在正确的时间提醒你。"
     },
     {
+      "name": "permission_bluetooth",
+      "value": "用于扫描并连接附近的蓝牙体重秤，直接读取体重与体脂数据。"
+    },
+    {
       "name": "permission_camera",
       "value": "用于扫描二维码，快速与服务器配对。"
     },

@@ -20,6 +20,7 @@ import { Section, Row, Switch, Button, TextField } from '../components/ui.jsx'
 import { isOn } from '../lib/modules.js'
 import { addWeighIn, dayOf, timeOf } from '../lib/weigh-ins.js'
 import { latestWeight } from '../lib/body-metrics.js'
+import { BleScaleSheet } from '../components/BleScaleSheet.jsx'
 
 // HarmonyOS edition (v1.2.0): this device's Huawei Health and weigh-in logging live here rather
 // than in Personal information. Other builds keep the directory exactly as it was.
@@ -208,6 +209,9 @@ export default function IntegrationsPage({ android = false, ios = false }) {
       <Row icon="heart" iconTint="var(--red)" title={t('Huawei Health')}
         subtitle={t('Connect and manage Huawei Health')} accessory="chevron"
         onClick={() => nav('/settings/health-connect')} />
+      <Row icon="bluetooth" iconTint="var(--blue)" title={t('Bluetooth scale')}
+        subtitle={t('Connect a scale, or type the weight yourself')} accessory="chevron"
+        onClick={() => sheet(close => <BleScaleSheet unit={unit} weight={startWeight} update={update} toast={toast} close={close} />)} />
       <Row icon="scale" iconTint="var(--teal)" title={t('Save weigh-in')}
         subtitle={t('Add a weight to your history')} accessory="chevron"
         onClick={() => sheet(close => <WeighInSheet unit={unit} weight={startWeight} update={update} toast={toast} close={close} />)} />

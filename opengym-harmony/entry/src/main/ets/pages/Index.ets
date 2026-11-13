@@ -41,6 +41,7 @@ import { SplashScreenPlugin } from '../plugins/SplashScreenPlugin';
 import { HttpPlugin } from '../plugins/HttpPlugin';
 import { GymReminderPlugin } from '../plugins/GymReminderPlugin';
 import { HealthConnectPlugin } from '../plugins/HealthConnectPlugin';
+import { BleScalePlugin } from '../plugins/scale/BleScalePlugin';
 
 @Entry
 @Component
@@ -49,6 +50,7 @@ struct Index {
   private bridge: HarmonyBridge = new HarmonyBridge();
   private appPlugin: AppPlugin = new AppPlugin();
   private gymReminder: GymReminderPlugin = new GymReminderPlugin();
+  private bleScale: BleScalePlugin = new BleScalePlugin();
 
   aboutToAppear(): void {
     this.setup();
@@ -73,12 +75,15 @@ struct Index {
     // Health Service Kit. The page calls it through the same HealthConnect name Android uses, so
     // lib/health-sync.js needs no platform branch.
     this.bridge.register('HealthConnect', new HealthConnectPlugin());
+    // Bluetooth weight scale: scan / connect / read to a real 体重秤, plus manual entry on the page.
+    this.bridge.register('Scale', this.bleScale);
     this.bridge.register('Channel', new ChannelPlugin());
     this.bridge.register('Capacitor', new CapacitorPlugin());
 
     // The events the page waits for.
     this.appPlugin.setEmitter(this.bridge);
     this.gymReminder.setEmitter(this.bridge);
+    this.bleScale.setEmitter(this.bridge);
   }
 
   /**
