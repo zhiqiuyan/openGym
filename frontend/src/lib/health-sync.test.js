@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 // (HealthConnectPlugin.java) and the app's data directory are played in memory.
 const h = vi.hoisted(() => {
   vi.stubEnv('VITE_MOBILE', '1')
-  return { files: new Map(), calls: [], status: { status: 'available', granted: false }, grant: true, fail: null, platform: 'android', plugins: [] }
+  return { files: new Map(), calls: [], status: { status: 'available', granted: false }, grant: true, fail: null, rejectRequest: null, platform: 'android', plugins: [] }
 })
 
 vi.mock('@capacitor/filesystem', () => ({
@@ -23,7 +23,12 @@ vi.mock('@capacitor/core', () => ({
   Capacitor: { getPlatform: () => h.platform },
   registerPlugin: name => (h.plugins.push(name), {
     status: async () => ({ ...h.status }),
-    requestPermissions: async () => { h.calls.push(['request']); h.status.granted = h.grant; return { granted: h.grant } },
+    requestPermissions: async () => {
+      h.calls.push(['request'])
+      if (h.rejectRequest) throw new Error(h.rejectRequest)
+      h.status.granted = h.grant
+      return { granted: h.grant }
+    },
     write: async arg => {
       h.calls.push(['write', arg])
       if (h.fail) throw Object.assign(new Error('refused'), { code: h.fail })
@@ -49,7 +54,7 @@ const file = () => JSON.parse(h.files.get('opengym-health.json') || 'null')
 let hs
 beforeEach(async () => {
   vi.resetModules()
-  h.files.clear(); h.calls = []; h.status = { status: 'available', granted: false }; h.grant = true; h.fail = null; h.removeFail = null; h.left = null; h.platform = 'android'; h.plugins = []
+  h.files.clear(); h.calls = []; h.status = { status: 'available', granted: false }; h.grant = true; h.fail = null; h.rejectRequest = null; h.removeFail = null; h.left = null; h.platform = 'android'; h.plugins = []
   hs = await import('./health-sync.js')
 })
 
@@ -77,6 +82,15 @@ describe('turning it on', () => {
     h.grant = false
     const r = await hs.enableHealth(state([workout('w1', 17)]))
     expect(r).toEqual({ ok: false, reason: 'denied' })
+    expect(writes()).toEqual([])
+    expect(file()).toBeNull()
+  })
+  it('reports a Health Kit failure as unavailable, not a permission the user declined', async () => {
+    h.rejectRequest = 'Health Kit not configured'
+    const r = await hs.enableHealth(state([]))
+    expect(r.ok).toBe(false)
+    expect(r.reason).toBe('unavailable')
+    expect(r.detail).toContain('Health Kit not configured')
     expect(writes()).toEqual([])
     expect(file()).toBeNull()
   })

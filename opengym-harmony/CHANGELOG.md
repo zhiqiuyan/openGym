@@ -8,9 +8,13 @@
 Release 附件名带版本号，另附 `.sha256` 与 `SHA256SUMS`。`/releases/latest` 始终指向最新版，
 应用内「检查更新」与仓库 README 都用这个地址，发新版无需改代码。
 
-## 1.2.0 (2026-11-13)
+## 1.2.0 (2026-11-16)
 
-- 集成蓝牙体重秤：扫描并连接真实蓝牙秤直读体重（小米/云麦/体知/香山/三诺等广播型协议），同时保留手动填写；集成页「本机」新增「蓝牙体重秤」入口，含中文文案与浅色/深色适配
+- 集成蓝牙体重秤：扫描并连接真实蓝牙秤直读体重（小米/云麦/体知/香山/三诺等广播型协议），同时保留手动填写；集成页「本机」新增「蓝牙体重秤」入口，含中文文案与浅色/深色适配。原生新增 `BleScalePlugin` 与完整协议栈（`ScaleBluetoothService` / `ProtocolRegistry` / 8 个厂商适配器），并声明 `ACCESS_BLUETOOTH` 权限
+- 蓝牙图标改用华为官方图标素材 `ohos_ic_public_device_bluetooth_filled`（对应 `sys.symbol.bluetooth`），原件存于 `frontend/src/assets/harmony-symbols/`；前端运行于 ArkWeb，故取官方矢量轮廓接入现有 SVG 图标体系而非 `SymbolGlyph`
+- 设置页：AI 教练只保留一级菜单入口，集成页不再出现重复卡片；「我的」页基本信息与派生指标的值文字颜色统一（`--label-2`），体重改为只读引用集成模块的称重历史，点击直达集成页
+- 华为运动健康：授权失败与用户拒绝授权分开归因，明确提示「没有完成 Health Kit 配置」；同步范围收敛为**仅锻炼记录**（基础数据权限，个人开发者可申请），体重保留在 openGym 本地。原生 `status()` / `requestPermissions()` 只请求 `WORKOUT` 写权限，`write()` 隔离体重与训练写入，并修正 `remove()` 从未删除锻炼记录的缺陷
+- 完整原生重编译：新 ArkTS 字节码与网页资源一并编入 HAP，`ets/modules.abc` 含 `BleScalePlugin` 与新的 Health Kit 逻辑
 
 ## 1.1.1 (2026-11-09)
 

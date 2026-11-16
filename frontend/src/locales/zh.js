@@ -3754,4 +3754,5 @@ export default {
   "Enter a weight first.": "请先输入体重。",
   "Could not connect": "无法连接",
   "Unknown device": "未知设备",
+  "Weight comes from your weigh-ins in Integrations.": "体重取自集成模块中的称重记录，点击可前往记录。",
 }

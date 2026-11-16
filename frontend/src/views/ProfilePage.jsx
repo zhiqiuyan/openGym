@@ -17,6 +17,7 @@
 // start — with a small tinted icon per field. The value is plain text, so no input can be too wide.
 
 import React, { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Section, Row, Button, TextField } from '../components/ui.jsx'
 import { t } from '../lib/i18n.js'
 import { useUI } from '../store/useUI.js'
@@ -134,11 +135,13 @@ function shrinkPhoto(file) {
 }
 
 export default function ProfilePage({ S, update }) {
+  const nav = useNavigate()
   const unit = S.unit === 'lb' ? 'lb' : 'kg'
   const recorded = latestWeight(S)
-  // The weight used for BMI: one typed here wins over the last weigh-in, but the weigh-in is the
-  // default so the number matches the chart the person already sees on Home.
-  const weight = S.profileWeight ?? recorded?.shown ?? null
+  // One source of truth: the weigh-in history written by Settings → Integrations (the manual
+  // weigh-in card and the Bluetooth scale). There is no separate weight field on this page —
+  // an independently typed value would silently disagree with the chart on Home and with BMI.
+  const weight = recorded?.shown ?? null
   const kg = weight === null ? null : toKg(weight, unit)
   const bmi = bmiOf(S.heightCm, kg)
   const band = bandOf(bmi)
@@ -154,10 +157,9 @@ export default function ProfilePage({ S, update }) {
     if (clean === null || clean === undefined || clean === '') delete s[key]
     else s[key] = clean
   })
-  // Weight stays in the profile's own unit, so no conversion at the edge: the field's min/max
-  // are already in that unit. Height, birth year and body fat get the shared validators.
+  // Height, birth year and body fat get the shared validators. Weight is not set here at all;
+  // it is read from the weigh-in history and edited in Integrations.
   const setHeight = set('heightCm', heightCm)
-  const setWeight = set('profileWeight')
   const setTarget = set('targetWeight')
 
   const name = String(S.profileName || '').trim()
@@ -206,13 +208,15 @@ export default function ProfilePage({ S, update }) {
     </section>
 
     {/* The same Row geometry and icon rail as Derived below, so the two sections read as one
-        list. Tapping a row still opens its own h3 sheet — only the frame around the value went. */}
-    <Section title={t('Your details')}>
+        list. Every field but Weight opens its own h3 sheet; Weight leads to Integrations, which
+        owns that number, and its value uses the very same --label-2 as Derived's numbers. */}
+    <Section title={t('Your details')} footer={t('Weight comes from your weigh-ins in Integrations.')}>
       <NumberRow icon="ruler" iconTint="var(--blue)" label={t('Height')} unit="cm"
         min={50} max={260} value={S.heightCm ?? null} onCommit={setHeight} />
-      <NumberRow icon="scale" iconTint="var(--teal)" label={t('Weight')} unit={unit}
-        min={unit === 'lb' ? 44 : 20} max={unit === 'lb' ? 880 : 400}
-        value={weight} onCommit={setWeight} />
+      {/* Not editable here: tapping goes to the one place that owns the number. */}
+      <Row icon="scale" iconTint="var(--teal)" title={t('Weight')} className="hm-lrow"
+        value={weight === null ? '—' : `${weight} ${unit}`} accessory="chevron"
+        onClick={() => nav('/settings/integrations')} />
       <ChoiceRow icon="personCircle" iconTint="var(--indigo)" label={t('Sex')}
         value={S.sex === 'female' || S.sex === 'male' ? S.sex : ''}
         options={[{ value: 'male', label: t('Male') }, { value: 'female', label: t('Female') }]}

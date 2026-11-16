@@ -31,7 +31,7 @@
 | 仓库性质 | 公开 fork；与上游作者及 Gym visual 无隶属或背书关系 |
 | 默认分支 | `harmony`（发版分支 = 上游主线 + 鸿蒙版补丁集） |
 | `main` | 上游 `main` 的**纯镜像**，逐提交快进，内容与上游一致 |
-| 当前鸿蒙版 | `1.1.1`（2026-11-09），独立的产品线与版本序列，自 `1.0.0` 起 |
+| 当前鸿蒙版 | `1.2.0`（2026-11-16），独立的产品线与版本序列，自 `1.0.0` 起 |
 | 许可证 | GNU AGPL v3.0；动作媒体另有单独授权限制（见[版权与许可](#版权与许可)） |
 
 ## 下载与安装
@@ -43,14 +43,14 @@
 | Android | 上游 [Release 中的签名 APK](https://github.com/DuarteSantos8/openGym/releases/latest) | 上游 |
 | Web / 自托管 | 上游的 Docker Compose 部署 | 上游 |
 
-**当前版本 `1.1.1`（2026-11-09）**
+**当前版本 `1.2.0`（2026-11-16）**
 
-- `versionName 1.1.1` · `versionCode 10004` · `buildVersion 5`
-- 文件 `openGym-Harmony-1.1.1-20261109-unsigned.hap`，233,985,515 字节（含内置动作媒体）
-- SHA256 `64e542f1c7c007d3d4b44078e130eae3e87d5e6421d1f8b9522c12d5c22d539e`
-- 同批附件：`.sha256` 单文件校验、`SHA256SUMS` 汇总校验、`release-notes-1.1.1.md` 发布说明
-- 本版为独立 Release `harmony-v1.1.1`；`harmony-v1.1.0` 及更早的附件保持不变，不再覆盖。
-  `ets/modules.abc` 含原生 `HealthConnectPlugin`，`versionCode` 严格递增，可直接覆盖安装。
+- `versionName 1.2.0` · `versionCode 10005` · `buildVersion 6`
+- 文件 `openGym-Harmony-1.2.0-20261116-unsigned.hap`，234,181,065 字节（含内置动作媒体）
+- SHA256 `b3bd1af0be2a08a1fe000db6f1e4132a6c6937d9c2f988e577f3775b341b0675`
+- 同批附件：`.sha256` 单文件校验、`SHA256SUMS` 汇总校验、`release-notes-1.2.0.md` 发布说明
+- 本版为独立 Release `harmony-v1.2.0`；`harmony-v1.1.1` 及更早的附件保持不变，不再覆盖。
+  `ets/modules.abc` 含原生 `BleScalePlugin` 与新版 `HealthConnectPlugin`，`versionCode` 严格递增，可直接覆盖安装。
 
 下载后建议先校验完整性：
 
@@ -59,7 +59,7 @@ sha256sum -c SHA256SUMS
 ```
 
 ```powershell
-(Get-FileHash .\openGym-Harmony-1.1.1-20261109-unsigned.hap -Algorithm SHA256).Hash
+(Get-FileHash .\openGym-Harmony-1.2.0-20261116-unsigned.hap -Algorithm SHA256).Hash
 ```
 
 安装包文件名以 `-unsigned` 结尾，部署到真机前需按 HarmonyOS 平台要求完成签名（本仓库不提供签名证书）。

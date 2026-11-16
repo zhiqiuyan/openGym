@@ -22,12 +22,19 @@
  * Time: Health Service Kit uses Unix milliseconds, the page uses Unix milliseconds too. The
  * earlier draft assumed nanoseconds; that was wrong and is corrected here.
  *
+ * Scope: only finished workouts are written. The 锻炼记录概要（写）scope is "basic" data, which
+ * individual developers may apply for; body weight / body fat and heart rate are "high-tier"
+ * scopes restricted to qualifying enterprise developers, so this edition asks for neither.
+ *
  * What it needs to actually run (all on the Huawei side, none of it in this file):
- *   - an AGC project with Health Service Kit enabled, and the app's bundle name registered;
- *   - the health permissions declared in module.json5 and the data types the app asks for;
- *   - a build signed and, for a published app, the Health Kit review passed.
- * Until those are in place init()/getAuthorizations() reject and status() honestly reports
- * "unsupported" — which is exactly the state the UI is written to handle.
+ *   - an AGC / HarmonyOS Developers project with Health Service Kit enabled, bundle name
+ *     ch.duartesantos.opengym, and that one basic write scope approved;
+ *   - `client_id` in entry/src/main/module.json5 under module.metadata, plus the signing
+ *     certificate's public key fingerprint registered for the app (debug and release differ);
+ *   - a build signed with that same certificate, a signed-in HUAWEI ID and the privacy
+ *     agreement accepted on the device (the Kit reports 1002702001 / 1002703001 otherwise).
+ * No上架 is required to develop and test: approved test scopes allow up to 100 users. Until the
+ * above is in place init()/requestAuthorizations() reject and the UI says so explicitly.
  */
 
 import { healthStore } from '@kit.HealthServiceKit';
@@ -179,8 +186,12 @@ export class HealthConnectPlugin extends PluginHandler {
 
   /**
    * status() -> { status, granted }. "available" means the Health Service Kit answered init();
-   * "granted" means it also reports at least one read authorisation. Before the user grants
-   * anything (or before AGC is configured) granted stays false — the page's expected state.
+   * "granted" means the one write scope this edition needs was actually approved.
+   *
+   * HarmonyOS only syncs finished workouts. Body weight (the body-fat data type) is a
+   * high-tier scope that individual developers cannot obtain, so asking for it here made
+   * getAuthorizations() fail with 201 even when the basic workout scope had been approved.
+   * The request deliberately asks for nothing on the read side.
    */
   private async status(): Promise<string> {
     let available: boolean = false;
@@ -189,11 +200,11 @@ export class HealthConnectPlugin extends PluginHandler {
       await this.ready();
       available = true;
       const req: healthStore.AuthorizationRequest = {
-        readDataTypes: [healthStore.healthDataTypes.WEIGHT, healthStore.healthDataTypes.HEART_RATE],
-        writeDataTypes: [healthStore.healthDataTypes.WEIGHT]
+        readDataTypes: [],
+        writeDataTypes: [healthStore.healthDataTypes.WORKOUT]
       };
       const res: healthStore.AuthorizationResponse = await healthStore.getAuthorizations(req);
-      granted = res.readDataTypes.length > 0;
+      granted = res.writeDataTypes.length > 0;
     } catch (e) {
       console.info('[HealthConnect] status: ' + messageOf(e));
     }
@@ -205,7 +216,9 @@ export class HealthConnectPlugin extends PluginHandler {
 
   /**
    * requestPermissions({ read: [..], write: [..] }) -> { granted, read: {..} }.
-   * Called with no arguments by enableHealth(): then it asks for the two types openGym writes.
+   * Called with no arguments by enableHealth(): then it asks for the single basic write scope
+   * this edition uses — 锻炼记录概要（写）. No read scope is requested, so the user sees one
+   * checkbox and an individual developer's approval is enough.
    */
   private async requestPermissions(json: Json): Promise<string> {
     const readItems: string[] = json.arrItems('read');
@@ -230,10 +243,9 @@ export class HealthConnectPlugin extends PluginHandler {
       }
     }
     if (readTypes.length === 0 && writeTypes.length === 0) {
-      // enableHealth() asks with no payload: request what openGym writes.
-      readTypes.push(healthStore.healthDataTypes.WEIGHT);
-      writeTypes.push(healthStore.healthDataTypes.WEIGHT);
-      readNames.push('weight');
+      // enableHealth() asks with no payload: request the only scope openGym writes with.
+      // Weight is deliberately absent — it is a high-tier scope this edition does not hold.
+      writeTypes.push(healthStore.healthDataTypes.WORKOUT);
     }
 
     try {
@@ -258,8 +270,10 @@ export class HealthConnectPlugin extends PluginHandler {
 
   /**
    * write({ sessions: [{ id, start, end, type, title, notes }], weights: [{ id, time, kg }] }).
-   * Weight samples go in as typed SamplePoints; workouts as ExerciseSequences, so both show up
-   * in 华为运动健康 next to the user's other training.
+   * Workouts go in as ExerciseSequences and show up in 华为运动健康 next to the user's other
+   * training; weight samples as typed SamplePoints. On HarmonyOS the page sends only sessions:
+   * the workout summary write scope is basic, while body weight is a high-tier scope that an
+   * individual developer cannot be granted.
    */
   private async write(json: Json): Promise<string> {
     try {
@@ -268,26 +282,33 @@ export class HealthConnectPlugin extends PluginHandler {
       const weights: string[] = json.arrItems('weights');
       const sessions: string[] = json.arrItems('sessions');
 
+      // A missing high-tier weight scope must never stop the basic workout write. The HarmonyOS
+      // page sends no weights at all, but the two loops stay independent for any caller and for
+      // a build that later gains the weight scope.
       for (const raw of weights) {
-        const one = new Json(raw);
-        const at: number = one.num('time', 0);
-        const kg: number = one.num('kg', 0);
-        if (at <= 0 || kg <= 0) {
-          continue;
+        try {
+          const one = new Json(raw);
+          const at: number = one.num('time', 0);
+          const kg: number = one.num('kg', 0);
+          if (at <= 0 || kg <= 0) {
+            continue;
+          }
+          const fields: Record<string, healthStore.HealthValueType> = {};
+          fields['bodyWeight'] = kg;
+          const point: healthStore.SamplePoint = {
+            dataType: healthStore.healthDataTypes.WEIGHT,
+            dataSourceId: id,
+            localDate: localDateOf(at),
+            startTime: at,
+            endTime: at,
+            timeZone: zoneOf(),
+            modifiedTime: Date.now(),
+            fields: fields
+          };
+          await healthStore.saveData(point);
+        } catch (e) {
+          console.info('[HealthConnect] weight skipped: ' + messageOf(e));
         }
-        const fields: Record<string, healthStore.HealthValueType> = {};
-        fields['bodyWeight'] = kg;
-        const point: healthStore.SamplePoint = {
-          dataType: healthStore.healthDataTypes.WEIGHT,
-          dataSourceId: id,
-          localDate: localDateOf(at),
-          startTime: at,
-          endTime: at,
-          timeZone: zoneOf(),
-          modifiedTime: Date.now(),
-          fields: fields
-        };
-        await healthStore.saveData(point);
       }
 
       for (const raw of sessions) {
@@ -334,13 +355,27 @@ export class HealthConnectPlugin extends PluginHandler {
     try {
       await this.ready();
       const options: healthStore.DataSourceOptions = { dataSourceId: this.sourceId };
-      const req: healthStore.SamplePointDeleteRequest = {
-        dataType: healthStore.healthDataTypes.WEIGHT,
-        startTime: 0,
-        endTime: Date.now(),
-        dataSourceOptions: options
-      };
-      await healthStore.deleteData(req);
+      // Workouts are ExerciseSequences, not SamplePoints. The old single WEIGHT delete could
+      // never remove anything this edition wrote, so "stop and remove what it wrote" left the
+      // training records behind. Each type is deleted with its own request type.
+      if (sessions.length > 0) {
+        const req: healthStore.ExerciseSequenceDeleteRequest = {
+          exerciseType: null,
+          startTime: 0,
+          endTime: Date.now(),
+          dataSourceOptions: options
+        };
+        await healthStore.deleteData(req);
+      }
+      if (weights.length > 0) {
+        const req: healthStore.SamplePointDeleteRequest = {
+          dataType: healthStore.healthDataTypes.WEIGHT,
+          startTime: 0,
+          endTime: Date.now(),
+          dataSourceOptions: options
+        };
+        await healthStore.deleteData(req);
+      }
       return Json.build(['"left":[]']);
     } catch (e) {
       return Json.error(messageOf(e));

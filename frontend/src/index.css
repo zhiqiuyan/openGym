@@ -3355,8 +3355,10 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 /* "Your details" and "Derived" are both plain Row lists: identical 29px icon rail, 11/14px
    padding, 46px min-height, body-sized title, right-aligned value and the same hairline start
    after the icon rail. No bespoke row geometry here, so their text margins cannot drift apart.
-   --acc-ink on the value is the only "tap to edit" hint and changes no geometry. */
-.hm-lrow .lrow-v{color:var(--acc-ink);font-variant-numeric:tabular-nums}
+   The values use the same --label-2 as Derived's numbers, including the "—" of a field that
+   still needs filling; an accent tint there read as a different kind of content. Editability is
+   carried by the tap affordance (button + press fill) instead of by colour. */
+.hm-lrow .lrow-v{color:var(--label-2);font-variant-numeric:tabular-nums}
 
 /* The sheet: a third-level heading, one field, two quiet actions. */
 .hm-sheet-h{margin:0 0 6px;font-size:var(--fs-title3);font-weight:600;color:var(--label)}

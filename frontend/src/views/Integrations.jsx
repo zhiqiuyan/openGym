@@ -163,11 +163,17 @@ export default function IntegrationsPage({ android = false, ios = false }) {
   }
   // HarmonyOS does not have Apple Health or Android Health Connect: its own health store and
   // weigh-in logging take their place in the section below, so the directory cards are dropped.
+  // The AI Coach is deliberately left out here too: on HarmonyOS it lives in the Settings root
+  // (ROOT_GROUPS -> 'coach'), so a second card in Integrations would be a duplicate way in.
   const dir = directory(ctx)
-    .map(cat => HARMONY ? { ...cat, cards: cat.cards.filter(c => c.id !== 'apple-health' && c.id !== 'health-connect') } : cat)
+    .map(cat => HARMONY
+      ? { ...cat, cards: cat.cards.filter(c => c.id !== 'apple-health' && c.id !== 'health-connect' && c.id !== 'coach') }
+      : cat)
     .filter(cat => cat.cards.length)
   const unit = S.unit === 'lb' ? 'lb' : 'kg'
-  const startWeight = latestWeight(S)?.shown ?? S.profileWeight ?? null
+  // One source of truth for weight: the weigh-in history the Integrations cards write. There is
+  // no separate "profile weight" field that could silently disagree with it.
+  const startWeight = latestWeight(S)?.shown ?? null
 
   const webhookCtx = { server, lan: !!config?.integrations?.lan, toast }
   const act = card => {
@@ -207,7 +213,7 @@ export default function IntegrationsPage({ android = false, ios = false }) {
         the person and the phone's health features sit with the other integrations. */}
     {HARMONY && <Section title={t('This device')} footer={t('Health data and weigh-ins stay on this phone.')}>
       <Row icon="heart" iconTint="var(--red)" title={t('Huawei Health')}
-        subtitle={t('Connect and manage Huawei Health')} accessory="chevron"
+        subtitle={HARMONY ? '把已完成的训练记录写入华为运动健康' : t('Connect and manage Huawei Health')} accessory="chevron"
         onClick={() => nav('/settings/health-connect')} />
       <Row icon="bluetooth" iconTint="var(--blue)" title={t('Bluetooth scale')}
         subtitle={t('Connect a scale, or type the weight yourself')} accessory="chevron"

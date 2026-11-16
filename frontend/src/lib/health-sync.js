@@ -26,6 +26,10 @@ import { exerciseNameFor } from './i18n-core.js'
 import { EXIDX } from './exercises.js'
 import { speedUnitOf } from './speed.js'
 
+// The HarmonyOS edition holds only the basic 锻炼记录概要（写）scope: body weight is a high-tier
+// scope an individual developer cannot be granted. Keep weigh-ins out of the Health link here.
+const HARMONY = import.meta.env.VITE_HARMONY === '1'
+
 export const HEALTH_FILE = 'opengym-health.json'
 const OFF = { on: false, written: {}, at: 0, error: null, readHr: false, readWeight: false, wHistory: false, wCursor: 0, seen: {}, hrTried: {}, readError: null }
 
@@ -117,7 +121,14 @@ export function syncHealth(S) {
 async function syncOnce(S, h) {
   const p = await plugin()
   if (!p) return h
-  const plan = planSync(healthRecords(S, { nameOf, speedUnit: speedUnitOf(S) }), h.written, goneIds(S))
+  const records = healthRecords(S, { nameOf, speedUnit: speedUnitOf(S) })
+  // Weigh-ins are neither written nor remembered as written on HarmonyOS. Recording them as
+  // written without a write would silently lose history if the weight scope is granted later.
+  const scoped = HARMONY ? { sessions: records.sessions, weights: [] } : records
+  const written = HARMONY
+    ? Object.fromEntries(Object.entries(h.written).filter(([, v]) => v?.k !== 'weight'))
+    : h.written
+  const plan = planSync(scoped, written, goneIds(S))
   const nothing = !plan.sessions.length && !plan.weights.length && !plan.remove.sessions.length && !plan.remove.weights.length
   if (nothing) {
     if (!h.error) return h
@@ -164,7 +175,20 @@ export async function enableHealth(S) {
   if (!p) return { ok: false, reason: 'unsupported' }
   const st = await p.HC.status().catch(() => ({ status: 'unsupported' }))
   if (st.status !== 'available') return { ok: false, reason: st.status }
-  const granted = st.granted || (await p.HC.requestPermissions().catch(() => ({ granted: false }))).granted
+  // A thrown authorisation call is NOT the user declining a prompt. On HarmonyOS it means the
+  // Health Service Kit could not complete the request at all (AGC project / Health Kit data-type
+  // approval / signed build missing). Keep the two apart so the UI can say what actually needs
+  // doing instead of blaming a permission the user was never offered.
+  let granted = st.granted
+  if (!granted) {
+    let res
+    try {
+      res = await p.HC.requestPermissions()
+    } catch (e) {
+      return { ok: false, reason: 'unavailable', detail: e?.message || '' }
+    }
+    granted = !!res?.granted
+  }
   if (!granted) return { ok: false, reason: 'denied' }
   const h = await loadHealth()
   await saveHealth({ ...h, on: true, error: null })
@@ -258,7 +282,13 @@ export async function enableRead(kind, getState, { apply = null } = {}) {
   const perm = kind === 'hr' ? 'heartRate' : 'weight'
   // The history permission only where Health Connect has it (status says so); Apple Health has none.
   const history = kind === 'weight' && p.platform !== 'ios' && st.history === true
-  const res = await p.HC.requestPermissions({ read: history ? [perm, 'history'] : [perm], write: [] }).catch(() => null)
+  let res
+  try {
+    res = await p.HC.requestPermissions({ read: history ? [perm, 'history'] : [perm], write: [] })
+  } catch (e) {
+    // Same distinction as enableHealth(): a Kit failure is not a declined permission.
+    return { ok: false, reason: 'unavailable', detail: e?.message || '' }
+  }
   // Apple Health never says whether reading was allowed (that it was refused is itself private):
   // `read` is then missing, and a refusal just reads nothing.
   const ok = res && (res.read ? res.read[perm] !== false : true)

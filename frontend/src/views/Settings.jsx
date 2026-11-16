@@ -1884,11 +1884,15 @@ const HEALTH_COPY = {
   // Service Kit — no cloud, no relay. These strings are Harmony-only, so they are written in
   // Chinese (the edition's primary language) rather than threaded through the 19-language packs.
   harmony: () => ({
-    section: '华为运动健康', write: '同步到华为运动健康', open: '打开华为运动健康',
-    footer: '完成或改动训练、称重后，训练与体重会写入华为运动健康。',
-    on: '已同步到华为运动健康', denied: '未授予华为运动健康权限', failed: '无法写入华为运动健康',
-    removeFailed: '无法从华为运动健康移除', stop: '停止同步到华为运动健康？',
-    stopSub: 'openGym 已写入的数据可保留在华为运动健康中，也可一并移除。',
+    section: '华为运动健康', write: '同步训练到华为运动健康', open: '打开华为运动健康',
+    footer: '完成或改动训练后，训练记录会写入华为运动健康；体重只保存在 openGym 内。',
+    on: '已同步训练到华为运动健康', denied: '未授予华为运动健康权限', failed: '无法同步训练',
+    // A failed Kit call is not a declined permission. This edition asks for one basic scope
+    // (锻炼记录概要（写）); body weight is high-tier and is deliberately never requested.
+    unavailable: '没有完成 Health Kit 配置，无法同步训练到华为运动健康',
+    notReady: '没有完成 Health Kit 配置：需在 AGC 开通 Health Kit、申请「锻炼记录概要（写）」基础权限、配置 Client ID 与签名证书公钥指纹后才能同步。测试权限无需上架，个人开发者可申请。',
+    removeFailed: '无法从华为运动健康移除', stop: '停止同步训练到华为运动健康？',
+    stopSub: 'openGym 写入的训练记录可保留在华为运动健康中，也可一并移除。',
   }),
   android: () => ({
     section: t('Health Connect'), write: t('Write to Health Connect'), open: t('Open Health Connect'),
@@ -1904,6 +1908,18 @@ const HEALTH_COPY = {
     removeFailed: t('Could not remove it from Apple Health'), stop: t('Stop writing to Apple Health?'),
     stopSub: t('What openGym already wrote can stay in Apple Health as your data, or be removed from it.'),
   }),
+}
+
+// Keep the reason apart: 'denied' is the user declining a prompt; anything else that stops the
+// sync on HarmonyOS is the Health Kit not being configured (init failed, or the authorisation
+// call threw), not a permission the user withheld. Both paths must say so explicitly.
+// Only the HarmonyOS copy has its own wording; the other platforms fall back to `failed`.
+const healthToast = (c, r) => {
+  if (r?.reason === 'unavailable' && r.detail) console.warn('[health] authorisation failed:', r.detail)
+  const kitNotReady = ['unavailable', 'unsupported', 'missing', 'update'].includes(r?.reason)
+  return r?.reason === 'denied' ? c.denied
+    : kitNotReady ? (c.unavailable || c.failed)
+    : c.failed
 }
 
 // Settings → Integrations → Apple Health / Health Connect. On a phone without the store, a line
@@ -1947,7 +1963,7 @@ function HealthConnectCard({ S, toast, android, page = false }) {
   const hm = HARMONY
   if (!st || !h) return null
   if (st.status === 'unsupported' || (!android && !ios)) {
-    return page ? <Section><Row icon="info" iconTint="var(--grey)" title={hm ? '华为运动健康' : t('Not on this phone')} subtitle={hm ? '本设备暂未启用华为运动健康的数据读写能力。' : t('This phone has no health store openGym can use.')} /></Section> : null
+    return page ? <Section><Row icon="info" iconTint="var(--grey)" title={hm ? '华为运动健康' : t('Not on this phone')} subtitle={hm ? '本设备未就绪：需申请「锻炼记录概要（写）」基础权限，并配置 Client ID 与签名证书。' : t('This phone has no health store openGym can use.')} /></Section> : null
   }
   const c = HEALTH_COPY[hm ? 'harmony' : (ios ? 'ios' : 'android')]()
 
@@ -1955,7 +1971,7 @@ function HealthConnectCard({ S, toast, android, page = false }) {
     <Section title={c.section} tour="data-health">
       <Row icon="heart" iconTint="var(--red)" title={c.section}
         subtitle={hm
-          ? '在系统设置中授权华为运动健康的数据权限后，即可同步训练与体重。'
+          ? c.notReady
           : st.status === 'update'
             ? t('Update Health Connect to share workouts and weigh-ins with other apps.')
             : t('Install Health Connect to share workouts and weigh-ins with other apps.')}
@@ -1970,8 +1986,8 @@ function HealthConnectCard({ S, toast, android, page = false }) {
       if (r.health) setH(r.health)
       else setH(await loadHealth())
       if (r.ok) toast(c.on)
-      else toast(r.reason === 'denied' ? c.denied : c.failed)
-    } catch { toast(c.failed) }
+      else toast(healthToast(c, r))
+    } catch { toast(c.unavailable || c.failed) }
     setBusy(false)
   }
   const turnOff = removeWritten => async () => {
@@ -1988,12 +2004,14 @@ function HealthConnectCard({ S, toast, android, page = false }) {
       if (v) {
         const r = await enableRead(kind, getState)
         setH(r.health || await loadHealth())
-        if (!r.ok) toast(r.reason === 'denied' ? c.denied : c.failed)
+        if (!r.ok) toast(healthToast(c, r))
       } else setH(await disableRead(kind))
     } catch { toast(c.failed) }
     setBusy(false)
   }
-  const reading = h.readHr || h.readWeight
+  // HarmonyOS holds no read scope at all (heart rate and body weight are high-tier), so neither
+  // read switch is offered there and neither can leave a stale "reading" state behind.
+  const reading = !hm && (h.readHr || h.readWeight)
 
   // Off can mean two things for what is already there, so it asks; closing the sheet keeps it on.
   const askOff = () => menuSheet({
@@ -2007,21 +2025,21 @@ function HealthConnectCard({ S, toast, android, page = false }) {
 
   return (
     <Section title={c.section} tour="data-health"
-      footer={[h.on && c.footer, h.on && ios && airpods && t('AirPods Pro 3 or Powerbeats Pro 2 in? Your iPhone measures the heart rate for every set, unless your Apple Watch is already on it.'), reading && (h.readWeight && h.wHistory ? t('openGym reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last year. Older workouts stay as they are.') : t('openGym reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last 30 days. Older workouts stay as they are.'))].filter(Boolean).join(' ') || null}>
+      footer={[hm && !h.on && c.notReady, h.on && c.footer, h.on && ios && airpods && t('AirPods Pro 3 or Powerbeats Pro 2 in? Your iPhone measures the heart rate for every set, unless your Apple Watch is already on it.'), reading && (h.readWeight && h.wHistory ? t('openGym reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last year. Older workouts stay as they are.') : t('openGym reads only while it is open: heart rate for workouts of the last day, weigh-ins of the last 30 days. Older workouts stay as they are.'))].filter(Boolean).join(' ') || null}>
       <Row icon="heart" iconTint="var(--red)" title={c.write}
-        subtitle={t('Finished workouts and weigh-ins, from this phone only.')}>
+        subtitle={hm ? '仅同步已完成的训练记录；体重保留在 openGym 内。' : t('Finished workouts and weigh-ins, from this phone only.')}>
         <Switch checked={!!h.on} disabled={busy} onChange={v => (v ? turnOn() : askOff())} />
       </Row>
       {h.on && h.error === 'permission' && <Row icon="warning" iconTint="var(--orange)"
         title={t('Permission withdrawn. Tap to allow again')} accessory="chevron" onClick={turnOn} />}
-      <Row icon="heart" iconTint="var(--red)" title={t('Heart rate from your watch')}
+      {!hm && <Row icon="heart" iconTint="var(--red)" title={t('Heart rate from your watch')}
         subtitle={t('After a workout, each set gets the heart rate your watch saved. Garmin, Fitbit, Galaxy Watch and friends welcome.')}>
         <Switch checked={!!h.readHr} disabled={busy} onChange={toggleRead('hr')} />
-      </Row>
-      <Row icon="scale" iconTint="var(--teal)" title={t('Weigh-ins from other apps')}
+      </Row>}
+      {!hm && <Row icon="scale" iconTint="var(--teal)" title={t('Weigh-ins from other apps')}
         subtitle={t('Your smart scale’s weigh-ins land here. One you type in yourself always wins.')}>
         <Switch checked={!!h.readWeight} disabled={busy} onChange={toggleRead('weight')} />
-      </Row>
+      </Row>}
       {reading && h.readError === 'permission' && <Row icon="warning" iconTint="var(--orange)"
         title={t('Permission withdrawn. Tap to allow again')} accessory="chevron"
         onClick={() => toggleRead(h.readHr ? 'hr' : 'weight')(true)} />}

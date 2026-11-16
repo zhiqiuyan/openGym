@@ -13,6 +13,8 @@ import { memo } from 'react'
 //   · strokes only (no fills) except where a shape reads better solid (star.fill)
 //   · round caps + round joins, stroke width from --icon-stroke (1.7 default)
 //   · geometry snapped to .5 so it lands on pixel edges at 24px
+//   · HarmonyOS system icons come from Huawei's own symbol library, not hand-drawn here;
+//     they are filled outlines and opt out of the stroke styling (see `bluetooth`).
 
 const P = {
   /* ---- navigation ---- */
@@ -30,7 +32,12 @@ const P = {
   figureRun: <><circle cx="14.2" cy="4.9" r="1.9" /><path d="M13.4 9.1 9.6 11.4l1.7 3.3-2.4 5.4M13.4 9.1l3.4 1.5 1.4 3.4M11.3 14.7l4.3.9 1.5 4.5M9.6 11.4 6 10.2" /></>,
   figureStrength: <><circle cx="12" cy="5.2" r="2" /><path d="M12 8.4v5.6M12 14 9.2 20.5M12 14l2.8 6.5M8 10.6h8M5.4 9.1v3M18.6 9.1v3" /></>,
   scale: <><rect x="3.4" y="4.4" width="17.2" height="16.2" rx="3.4" /><path d="M8.3 9.2a3.9 3.9 0 0 1 7.4 0" /><path d="M12 9.2v2.5M8.9 16.2h6.2" /></>,
-  bluetooth: <path d="M17.7 7.7 12 2h-1v7.6L6.4 5 5 6.4 10.6 12 5 17.6 6.4 19l4.6-4.6V22h1l5.7-5.7-4.3-4.3 4.3-4.3zM13 5.8l1.9 1.9L13 9.6V5.8zM14.9 16.3 13 18.2v-3.8l1.9 1.9z" />,
+  // Huawei HarmonyOS official icon asset: `ohos_ic_public_device_bluetooth_filled`
+  // (system resource id 125831209; the matching symbol is `sys.symbol.bluetooth`, 125831971).
+  // Source: DevEco SDK `openharmony/previewer/common/resources/.../media/`, original SVG kept at
+  // src/assets/harmony-symbols/. Its 24×24 outline is filled, hence the explicit currentColor;
+  // scaled 0.9 into the set's 3…21 live area so it sits at the same optical size as its neighbours.
+  bluetooth: <g transform="translate(1.2 1.2) scale(0.9)"><path fill="currentColor" stroke="none" fillRule="nonzero" d="M14.121,12.7062498 L17.6648607,16.2506471 C18.3327459,16.9185324 18.3479252,17.9919572 17.7103983,18.6782762 L17.6648607,18.7255208 L13.7096396,22.5093734 C13.0112075,23.177439 11.9034423,23.152822 11.2353767,22.4543898 C10.9411698,22.1468098 10.769743,21.743232 10.7516036,21.3196855 L10.75,21.2447502 L10.75,16.0772498 L14.121,12.7062498 Z M12.75,14.16425 L12.75,20.6595 L16.06975,17.484 L12.75,14.16425 Z M6.70710678,18.7071068 C6.32959997,19.0846136 5.72535891,19.0971972 5.33273648,18.7448575 L5.29289322,18.7071068 C4.9153864,18.3296 4.90280284,17.7253589 5.25514254,17.3327365 L5.29289322,17.2928932 L10.58575,12 L5.29289322,6.70710678 C4.9153864,6.32959997 4.90280284,5.72535891 5.25514254,5.33273648 L5.29289322,5.29289322 C5.67040003,4.9153864 6.27464109,4.90280284 6.66726352,5.25514254 L6.70710678,5.29289322 L10.75,9.33575 L10.75,2.75524981 C10.75,1.80888688 11.5011958,1.03797514 12.4398376,1.00626457 L12.5,1.00524981 C12.9256327,1.00524981 13.335769,1.16033174 13.6543798,1.43998843 L13.7096396,1.49062656 L17.6370634,5.24729279 C18.3196221,5.90017501 18.3586456,6.97299769 17.7365238,7.67331097 L17.6648607,7.74935291 L6.70710678,18.7071068 Z M12.75,3.34025 L12.75,9.8355 L16.06975,6.51575 L12.75,3.34025 Z" /></g>,
   flame: <path d="M12 20.4c3.2 0 5.4-2.1 5.4-5.1 0-3.9-3.4-5.6-2.6-9.8-2.5.8-4 2.9-4 5.1 0 1-.5 1.6-1.2 1.6-.8 0-1.2-.7-1.2-1.8-1.1 1.2-1.8 2.9-1.8 4.9 0 3 2.2 5.1 5.4 5.1Z" />,
   // a streak freeze (lib/streak.js): a week off that did not break the streak
   snowflake: <path d="M12 3.4v17.2M4.6 7.7l14.8 8.6M4.6 16.3l14.8-8.6M9.8 4.8 12 6.6l2.2-1.8M9.8 19.2l2.2-1.8 2.2 1.8M4.2 10.5l2.7-.9-.5-2.8M19.8 13.5l-2.7.9.5 2.8M4.2 13.5l2.7.9-.5 2.8M19.8 10.5l-2.7-.9.5-2.8" />,
