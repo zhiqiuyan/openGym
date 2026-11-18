@@ -248,8 +248,8 @@ export default function CoachSetup() {
       <div style={{ flex: 1, marginInlineStart: 12 }}><h1>{t('AI Coach')}</h1></div>
     </div>
 
-    <Section footer={t('No API key needed: Claude, ChatGPT or Gemini come to openGym as a connector, on the plan you already pay for.')}>
-      <Row icon="chat" iconTint="var(--acc)" title={t('Use your Claude, ChatGPT or Gemini plan')} subtitle={t('Add openGym to the assistant app you already pay for')}
+    <Section footer={t('Quick sign-in uses the plan you already pay for: Claude, ChatGPT or Gemini. DeepSeek has no subscription sign-in — pick it below with your API key.')}>
+      <Row icon="chat" iconTint="var(--acc)" title={t('Quick sign-in')} subtitle={t('Claude · ChatGPT · Gemini — sign in with a plan you already have. For DeepSeek, use your API key below.')}
         accessory="chevron" onClick={() => nav('/assistants')} />
     </Section>
 

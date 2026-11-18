@@ -1271,8 +1271,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         {/* Android only: the system folder picker (#161). iOS shows Documents in Files already. */}
         {MOBILE && android && S.autoBackup && <BackupFolderRow />}
       </Section>
-      {/* Apple Health / Health Connect moved to Integrations (1.4.4); the way there stays here. */}
-      {MOBILE && on('health') && <HealthLinkRow android={android} nav={nav} />}
+      {/* HarmonyOS edition: Huawei Health stays only in Integrations (one entry), so it is not
+          repeated here under Data & backup. */}
       <Section title={t('Bring data in')}>
         <Row icon="download" iconTint="var(--teal)" title={t('Import backup')} accessory="chevron" onClick={() => fileRef.current.click()} tour="data-import" />
         <Row icon="download" iconTint="var(--teal)" title={t('Import from another app')}
@@ -1551,10 +1551,6 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
               same row, in the same place, straight to that card; nobody else has anything to set. */}
           {g.title === 'Connections' && adminCoach && <Row icon={PAGES.coach.icon} iconTint={PAGES.coach.tint} title={t(PAGES.coach.title)}
             value={t('Admin')} accessory="chevron" onClick={() => nav('/admin', { state: { section: 'coach' } })} className="sp-root-row" />}
-          {/* Claude, ChatGPT or Gemini on the plan people already pay for, with openGym as their
-              connector (views/Assistants.jsx). Everywhere but the offline build and the demo. */}
-          {g.title === 'Connections' && !DEMO && !ctx.offline && <Row icon="chat" iconTint="var(--acc)" title={t('Use your subscription')}
-            accessory="chevron" onClick={() => nav('/assistants')} className="sp-root-row" />}
         </Section>
       ))}
       <div className="dim small sp-version">openGym v{__APP_VERSION__}</div>
