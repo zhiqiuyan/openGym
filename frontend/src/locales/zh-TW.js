@@ -5691,6 +5691,7 @@ export default {
   "Claude, with an API key": "Claude，使用 API 金鑰",
   "Code from OpenRouter": "OpenRouter 的代碼",
   "Daily check-ins, sleep, resting heart rate, HRV and steps from your phone, and blood pressure. Off until you switch it on.": "每日狀態、睡眠、靜止心率、HRV、手機步數以及血壓。開啟前一直關閉。",
+  "DeepSeek chat and reasoning models, with your API key": "DeepSeek 對話與推理模型，使用你的 API 金鑰",
   "Estimated one-rep maxes of your main lifts over the last twelve weeks.": "過去十二週主要動作的估算一次最大重量。",
   "Find it for me": "幫我找",
   "For questions that need facts from outside your training, like a study or a product.": "用於需要訓練以外資訊的問題，例如一項研究或一款產品。",

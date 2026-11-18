@@ -44,6 +44,9 @@ const CARDS = [
   { id: 'anthropic', provider: 'anthropic', icon: 'key', tint: 'var(--orange)', line: () => t('Claude, with an API key') },
   { id: 'openai', provider: 'openai', icon: 'key', tint: 'var(--green)', line: () => t('GPT, with an API key') },
   { id: 'gemini', provider: 'gemini', icon: 'key', tint: 'var(--blue)', line: () => t('Gemini, with a free tier to start') },
+  // The HarmonyOS edition has offered DeepSeek since 1.0.0. Give it a real card with its own
+  // wording rather than leaving it as an unlabelled chip, so the model and its purpose are clear.
+  { id: 'deepseek', provider: 'deepseek', icon: 'sparkles', tint: 'var(--purple)', line: () => t('DeepSeek chat and reasoning models, with your API key') },
   { id: 'local', provider: 'compatible', icon: 'house', tint: 'var(--teal)', title: () => t('On my network'), line: () => t('Ollama or LM Studio at home, nothing leaves your Wi-Fi') }
 ]
 const TIER = { free: () => t('free'), low: () => '$', mid: () => '$$', high: () => '$$$' }

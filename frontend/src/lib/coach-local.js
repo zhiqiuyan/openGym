@@ -25,6 +25,11 @@ import { HTTP_PROVIDERS, baseUrlFor, phoneMayCall } from '../../../api/coach/cor
 import anthropic from '../../../api/coach/core/adapters/anthropic.js'
 import openai from '../../../api/coach/core/adapters/openai.js'
 import gemini from '../../../api/coach/core/adapters/gemini.js'
+// DeepSeek — the HarmonyOS edition has offered this fixed-endpoint, OpenAI-compatible provider
+// since 1.0.0 (deepseek-chat / deepseek-reasoner). Upstream 1.4.5 dropped the adapter, but the
+// provider definition (providers.js) and its adapter file survive in this edition, so keep the
+// registration: the setup screen lists DeepSeek and a missing adapter would make it unusable.
+import deepseek from '../../../api/coach/core/adapters/deepseek.js'
 import minimax from '../../../api/coach/core/adapters/minimax.js'
 import openrouter from '../../../api/coach/core/adapters/openrouter.js'
 import compatible from '../../../api/coach/core/adapters/compatible.js'
@@ -36,7 +41,7 @@ import { planHash } from './coach.js'
 import { todayISO } from './format.js'
 import { t, getLang } from './i18n.js'
 
-export const ADAPTERS = { anthropic, openai, gemini, minimax, openrouter, compatible }
+export const ADAPTERS = { anthropic, openai, gemini, deepseek, minimax, openrouter, compatible }
 // Ten minutes for a cloud API: a thinking model can take several before its last word, and the
 // answer streams (#1035), so a long wait is a live connection, not a hung one. A model on
 // somebody's laptop is slower still, so the OpenAI-compatible endpoint gets the long budget.
