@@ -274,9 +274,23 @@ const HealthConnect = {
   then: undefined,
 }
 
+// Bluetooth weight scale (native BleScalePlugin.ets). BleScaleSheet.jsx calls these through
+// nativeCall directly and listens for Scale.* events; the shim is exported so the bridge's
+// plugin inventory matches the native registration (tools/verify-harmony.mjs checks both ends).
+const Scale = {
+  getState: (opts) => nativeCall('Scale', 'getState', opts),
+  scan: (opts) => nativeCall('Scale', 'scan', opts),
+  stopScan: (opts) => nativeCall('Scale', 'stopScan', opts),
+  connect: (opts) => nativeCall('Scale', 'connect', opts),
+  disconnect: (opts) => nativeCall('Scale', 'disconnect', opts),
+  requestPermissions: (opts) => nativeCall('Scale', 'requestPermissions', opts),
+  adapters: (opts) => nativeCall('Scale', 'adapters', opts),
+  then: undefined,
+}
+
 export {
   SecureStorage, Filesystem, LocalNotifications, App, Share, SplashScreen,
-  BarcodeScanner, GymReminder, Channel, HealthConnect
+  BarcodeScanner, GymReminder, Channel, HealthConnect, Scale
 }
 
 export { hasNativeBridge }
