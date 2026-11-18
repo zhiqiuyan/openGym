@@ -2294,14 +2294,14 @@ function HealthConnectCard({ S, toast, android, page = false }) {
       {!hm && <Row icon="scale" iconTint="var(--teal)" title={t('Weigh-ins from other apps')}
         subtitle={t('Your smart scale’s weigh-ins land here. One you type in yourself always wins.')}>
         <Switch checked={!!h.readWeight} disabled={busy} onChange={toggleRead('weight')} />
-      </Row>
-      <Row icon="scale" iconTint="var(--purple)" title={t('Body composition from your scale')}
+      </Row>}
+      {!hm && <Row icon="scale" iconTint="var(--purple)" title={t('Body composition from your scale')}
         subtitle={ios ? t('Body fat and lean mass, as your scale saved them. Shown under Body measurements, never mixed into what you log.') : t('Body fat, lean mass, bone mass, body water and BMR, as your scale saved them. Shown under Body measurements, never mixed into what you log.')}>
         <Switch checked={!!h.readBody} disabled={busy} onChange={toggleRead('body')} />
-      </Row>
+      </Row>}
       {/* Vitals (v1.4.5, lib/vitals.js): what the Daily form card and the check-in use. Explained
           before the system's own dialog, which asks for each of the four on its own. */}
-      <Row icon="moon" iconTint="var(--indigo)" title={t('Sleep, resting heart rate, HRV and steps')}
+      {!hm && <Row icon="moon" iconTint="var(--indigo)" title={t('Sleep, resting heart rate, HRV and steps')}
         subtitle={t('For the Daily form card in Stats and your check-in. Read on this phone only, never sent anywhere.')}>
         <Switch checked={!!h.readVitals} disabled={busy} onChange={v => (v
           ? confirmSheet({ title: t('Read your vitals?'),
@@ -2310,13 +2310,13 @@ function HealthConnectCard({ S, toast, android, page = false }) {
               : t('openGym asks Health Connect for your sleep, resting heart rate, heart rate variability and steps. Allow the ones you like. They stay on this phone, in openGym’s own file, and never go to a server.'),
             confirmText: t('Continue'), onConfirm: () => toggleRead('vitals')(true) })
           : toggleRead('vitals')(false))} />
-      </Row>
+      </Row>}
       {/* Sport (v1.4.5, gm-hooks, lib/activities.js): runs, rides and matches other apps saved,
           as activities in the calendar and the recovery map. openGym's own workouts stay out. */}
-      <Row icon="figureRun" iconTint="var(--blue)" title={t('Runs, rides and matches from other apps')}
+      {!hm && <Row icon="figureRun" iconTint="var(--blue)" title={t('Runs, rides and matches from other apps')}
         subtitle={t('Strava, your watch, Runna and friends: their sessions show in your calendar and tire the right muscles. No sets, no volume.')}>
         <Switch checked={!!h.readSport} disabled={busy} onChange={toggleRead('sport')} />
-      </Row>
+      </Row>}
       {/* The Apple Watch's Zones page: max heart rate from the age, a watch setting (show.zones).
           On asks Apple Health (the watch app shares this app's permissions), or opens it once answered. */}
       {ios && isOn(S, 'watch') && <Row icon="heart" iconTint="var(--orange)" title={t('Birth date, for heart-rate zones')}
