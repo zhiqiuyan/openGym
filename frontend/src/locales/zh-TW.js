@@ -4,6 +4,7 @@ export default {
   "This HarmonyOS edition has its own version line and update channel, separate from the Android APK.": "鴻蒙版為獨立發行版本，有單獨的版本號與更新通道，與 Android APK 互不影響。",
   "Free: no ads, no subscriptions, no tracking.": "免費，沒有廣告、沒有訂閱、沒有追蹤。",
   "Copyright & licence": "版權與授權",
+  "Exercise media credit": "動作素材署名",
   "License": "授權條款",
   "Third-party notices": "第三方聲明",
   "Open the release page of this edition": "打開發行頁面查看更新",

@@ -2,6 +2,7 @@
 export default {
   // HarmonyOS edition — About & updates / partly translated steps (see views/Settings.jsx).
   "Copyright & licence": "版权与许可",
+  "Exercise media credit": "动作素材署名",
   "License": "许可证",
   "Third-party notices": "第三方声明",
   "Open the release page of this edition": "打开发行页面查看更新",

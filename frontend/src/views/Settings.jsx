@@ -44,7 +44,6 @@ import { bandsSheet } from '../components/Bands.jsx'
 import { bandsOf } from '../lib/bands.js'
 import { sampleCue } from '../lib/spoken-cues.js'
 import { muscleTargetsSheet } from '../components/WeeklySets.jsx'
-import { aboutYouSheet } from '../components/StrengthLevel.jsx'
 import { api, webauthnOK, passkeyRegister, passkeyError, IS_ANDROID } from '../lib/api.js'
 import { pushSupported, enablePush, disablePush, sendTestPush, syncPushSubscription } from '../lib/push.js'
 import { wakeLockSupported } from '../lib/wakelock.js'
@@ -1070,8 +1069,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           <Switch aria-label={t('Count body weight in bodyweight lifts')} checked={S.volumeBodyweight === true}
             onChange={v => update(s => { s.volumeBodyweight = v })} />
         </Row>
-        {/* Sex and year of birth, read only by the strength levels (lib/strength-level.js). */}
-        {on('strength') && <Row icon="person" iconTint="var(--teal)" title={t('About you')} subtitle={t('For your strength levels')} accessory="chevron" onClick={aboutYouSheet} />}
+        {/* HarmonyOS: "About you" is hidden here — sex and year of birth are entered once on the
+            Personal information page and read from the same S.sex / S.birthYear by strength levels. */}
         {/* #859: a day can hold several weigh-ins. Which one is the day's number for the chart, the
             trend, the goal line, widgets, Wrapped and the Coach (lib/weigh-ins.js). Morning is the
             default: it is the weight worth comparing from one day to the next. */}
@@ -1352,13 +1351,18 @@ export default function Settings({ page = null, find = null, via = null, entryKe
       {/* AGPL v3 wants the licence and the corresponding source offered to whoever receives a
           build; the media licence wants its attribution reproduced (NOTICE.md, agreement §8c).
           This edition shows no donation rows: free, no ads, no subscriptions, no tracking. */}
-      <Section title={t('Copyright & licence')}>
+      <Section title={t('Copyright & licence')}
+        footer={HARMONY ? 'openGym — Copyright (C) 2026 Duarte Santos. HarmonyOS edition — adaptations Copyright (C) 2026 contributors.' : undefined}>
         <Row icon="shield" iconTint="var(--indigo)" title={t('License')} value="GNU AGPL v3.0"
           accessory="chevron" onClick={() => window.open(LICENCE_URL, '_blank', 'noopener')} />
         <Row icon="link" iconTint="var(--blue)" title={t('Source code')} accessory="chevron"
           onClick={() => window.open(SOURCE_URL, '_blank', 'noopener')} />
         <Row icon="note" iconTint="var(--teal)" title={t('Third-party notices')} accessory="chevron"
           onClick={() => window.open(NOTICES_URL, '_blank', 'noopener')} />
+        {/* Media attribution the licence asks for word for word (NOTICE.md, §8c). */}
+        <Row icon="info" iconTint="var(--grey)" title={t('Exercise media credit')}
+          subtitle="© Aliaksandr Makatserchyk, Gym visual · licensed for openGym only" accessory="chevron"
+          onClick={() => window.open('https://gymvisual.com/', '_blank', 'noopener')} />
       </Section>
       {/* "Add to Home screen": not inside the phone app, and not once it is installed. Safari's
           Share menu only on Apple (an iPad says Macintosh too); Windows and Linux get Chrome's
@@ -1368,15 +1372,6 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           title={IS_ANDROID ? t('In Chrome: ⋮ menu → Add to Home screen') : APPLE_UA ? t('In Safari: Share → Add to Home Screen') : t('In Chrome or Edge: the install icon in the address bar')}
           subtitle={t('to install openGym as a full-screen app.') + ' ' + (user ? t('Your data syncs with your profile. Sign in anywhere and it’s there.') : t('Guest data stays on this device, so export a backup now and then!'))} />
       </Section>}
-      {/* Legal lines stay in English on purpose: the licence and the media agreement ask for
-          these notices word for word. The translated UI labels above cover the rest. */}
-      <div className="small sp-version about-legal">
-        <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">{t('Source code')}</a> · {t('free & open source (AGPL v3)')}<br />
-        openGym — Copyright (C) 2026 Duarte Santos.<br />
-        HarmonyOS edition — adaptations Copyright (C) 2026 openGym HarmonyOS contributors.<br />
-        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener noreferrer">Gym visual</a>, gymvisual.com.
-        Media licensed for use in openGym only; see <a href={NOTICES_URL} target="_blank" rel="noopener noreferrer">NOTICE.md</a>
-      </div>
     </>,
 
     account: () => <>
@@ -1537,8 +1532,9 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
             : <AvatarFace name={faceName} />}
           <span className="lrow-m"><span className="lrow-t">{acct.title}</span><span className="lrow-s">{acct.sub}</span></span>
           {/* Badges pinned to the profile (lib/levels.js), from Stats → Week streak → Level.
-              Hidden on HarmonyOS: the 1.2.0 account-card design carries no badges. */}
-          {!HARMONY && ctx.mod('motivation') && <PinnedBadges />}
+              Shown on HarmonyOS too: they belong to this person and sit inside the personal
+              information card, alongside the nickname and photo. */}
+          {ctx.mod('motivation') && <PinnedBadges />}
           <Icon name="chevronRight" className="lrow-c" />
         </button>
       </Section>

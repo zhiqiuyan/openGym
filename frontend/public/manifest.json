@@ -1,6 +1,6 @@
 {
-  "name": "openGym",
-  "short_name": "openGym",
+  "name": "智练场",
+  "short_name": "智练场",
   "description": "Personal gym & body weight tracker",
   "start_url": "./",
   "scope": "./",
