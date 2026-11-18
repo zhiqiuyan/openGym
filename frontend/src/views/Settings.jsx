@@ -119,7 +119,7 @@ import { readOrientation, setOrientation } from '../lib/orientation.js'
 import { AvatarFace, AvatarSection } from '../components/Avatar.jsx'
 import { useOfflineBuild } from '../lib/use-offline-build.js'
 import { offlineBuild } from '../lib/build-caps.js'
-import NetworkLogPage, { NetworkLogRow } from './NetworkLog.jsx'
+import NetworkLogPage from './NetworkLog.jsx'
 import ReminderSounds from '../components/ReminderSounds.jsx'
 import DisplayRows from '../components/DisplayRows.jsx'
 
@@ -1296,33 +1296,45 @@ export default function Settings({ page = null, find = null, via = null, entryKe
     </>,
 
     about: () => <>
-      {/* Updates. On Android the row is always there: it checks on demand and installs when a
-          release is newer (checksum verified, see onUpdateRowClick). On the web the app updates
-          with its server, so the row points at the APK for the phone instead. iOS and the Google
-          Play build are updated by their store. */}
-      <Section footer={MOBILE ? (selfUpdate ? t('Releases are checked on GitHub. The download is verified against its checksum before the installer opens.') : offline ? t('openGym Offline never checks for updates, it can’t. New versions come from wherever you got this one.') : fdroid ? t('F-Droid installs the updates for this build.') : null) : t('The web app updates together with your server. The Android app installs its own updates from here.')}>
-        {/* The sideloaded APK comes in three kinds that differ only in the animations built in
-            (lib/apk-variant.js): which one this is, so nobody has to guess from the file size. */}
+      {/* About & updates. The identity block has no surface of its own: on a light theme the
+          inset groups already sit flush with --bg, so a filled hero would read as one more
+          floating card. Everything below uses the same Section/Row primitive as the rest of
+          Settings, and every outbound link is a real tap target with noopener. */}
+      <div className="about-hero">
+        <span className="about-hero-mark"><Icon name="dumbbell" /></span>
+        <div className="about-hero-name">openGym</div>
+        {HARMONY && <div className="about-hero-badge">{t('HarmonyOS edition')}</div>}
+        <div className="about-hero-version">v{__APP_VERSION__}</div>
+        <div className="about-hero-free">{t('Free: no ads, no subscriptions, no tracking.')}</div>
+      </div>
+
+      <Section footer={HARMONY
+        ? t('This HarmonyOS edition has its own version line and update channel, separate from the Android APK.')
+        : MOBILE
+          ? (selfUpdate ? t('Releases are checked on GitHub. The download is verified against its checksum before the installer opens.') : fdroid ? t('F-Droid installs the updates for this build.') : null)
+          : t('The web app updates together with your server. The Android app installs its own updates from here.')}>
+        {/* The Harmony edition has no APK variant; its version comes from AppScope/app.json5
+            and its updates from its own release page, never the GitHub APK feed. */}
         <Row icon="info" iconTint="var(--grey)" title={t('Version')} value={'v' + __APP_VERSION__}
-          subtitle={MOBILE && selfUpdate ? t('{0} APK, animations at {1} px', VARIANT_NAMES[APK_VARIANT], BUILTIN_PX) : offline ? t('openGym Offline, no internet permission') : undefined} />
-        {MOBILE
-          ? selfUpdate && <Row icon="download" iconTint="var(--green)"
-              title={updateInfo?.hasUpdate ? t('Update to openGym v{0}', updateInfo.latestVersion) : t('Check for updates')}
-              subtitle={checking ? t('Checking…') : t('You have v{0}', __APP_VERSION__)}
-              accessory="chevron"
-              onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
-          : <Row icon="download" iconTint="var(--green)" title={t('Get the Android app')}
-              subtitle={t('Download the APK from opengym.ch')} accessory="chevron"
-              onClick={() => window.open('https://opengym.ch/#download', '_blank', 'noopener')} />}
+          subtitle={HARMONY ? t('HarmonyOS edition') : (MOBILE && selfUpdate ? t('{0} APK, animations at {1} px', VARIANT_NAMES[APK_VARIANT], BUILTIN_PX) : undefined)} />
+        {HARMONY
+          ? <Row icon="download" iconTint="var(--green)" title={t('Check for updates')}
+              subtitle={t('Open the release page of this edition')} accessory="chevron"
+              onClick={() => window.open(EDITION_RELEASES, '_blank', 'noopener')} />
+          : MOBILE
+            ? selfUpdate && <Row icon="download" iconTint="var(--green)"
+                title={updateInfo?.hasUpdate ? t('Update to openGym v{0}', updateInfo.latestVersion) : t('Check for updates')}
+                subtitle={checking ? t('Checking…') : t('You have v{0}', __APP_VERSION__)}
+                accessory="chevron"
+                onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
+            : <Row icon="download" iconTint="var(--green)" title={t('Get the Android app')}
+                subtitle={t('Download the APK from opengym.ch')} accessory="chevron"
+                onClick={() => window.open('https://opengym.ch/#download', '_blank', 'noopener')} />}
       </Section>
       {/* The F-Droid build has no Wear OS link (it would need Google Play services, which F-Droid
           leaves out): said here rather than having a watch that silently never connects. */}
       {fdroid && <Section footer={t('Wear OS watches talk to the phone through Google Play services, which F-Droid apps leave out. The APK from opengym.ch and the Google Play app have the watch link.')}>
         <Row icon="watch" iconTint="var(--grey)" title={t('Wear OS watch')} value={t('Not in this build')} />
-      </Section>}
-      {/* What this copy of the app sent where since it started (lib/net-log.js), phone app only. */}
-      {MOBILE && <Section>
-        <NetworkLogRow />
       </Section>}
       {/* Tutorials (components/Tour.jsx): the tour from the top, and the four short guided runs
           its closing card offers. Not over a running workout: the tour's practice session and the
@@ -1356,16 +1368,14 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           title={IS_ANDROID ? t('In Chrome: ⋮ menu → Add to Home screen') : APPLE_UA ? t('In Safari: Share → Add to Home Screen') : t('In Chrome or Edge: the install icon in the address bar')}
           subtitle={t('to install openGym as a full-screen app.') + ' ' + (user ? t('Your data syncs with your profile. Sign in anywhere and it’s there.') : t('Guest data stays on this device, so export a backup now and then!'))} />
       </Section>}
-      {/* The version, where the support template tells people to look for it. On the phone
-          build there is no address bar and no about box, so without this there is no way to tell
-          which build you are running, or whether an update actually installed. */}
-      <div className="dim small sp-version">
-        openGym v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
-        <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener"><span>{t('Source code')}</span></a><br />
-        {/* Attribution the media licence asks for word for word (agreement §8c), so it is not translated.
-            The spans keep each link's words above its neighbours' 44 px tap targets (index.css). */}
-        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener"><span>Gym visual</span></a>, gymvisual.com.
-        Media licensed for use in openGym only; see <a href="https://github.com/DuarteSantos8/openGym/blob/main/NOTICE.md" target="_blank" rel="noopener"><span>NOTICE.md</span></a>
+      {/* Legal lines stay in English on purpose: the licence and the media agreement ask for
+          these notices word for word. The translated UI labels above cover the rest. */}
+      <div className="small sp-version about-legal">
+        <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">{t('Source code')}</a> · {t('free & open source (AGPL v3)')}<br />
+        openGym — Copyright (C) 2026 Duarte Santos.<br />
+        HarmonyOS edition — adaptations Copyright (C) 2026 openGym HarmonyOS contributors.<br />
+        Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener noreferrer">Gym visual</a>, gymvisual.com.
+        Media licensed for use in openGym only; see <a href={NOTICES_URL} target="_blank" rel="noopener noreferrer">NOTICE.md</a>
       </div>
     </>,
 
