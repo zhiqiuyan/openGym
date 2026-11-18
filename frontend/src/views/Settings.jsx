@@ -1478,14 +1478,24 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
   const [q, setQ] = useState(() => (key && lastQuery.key === key ? lastQuery.q : ''))
   const set = v => { lastQuery = { q: v, key }; setQ(v) }
   const hits = q.trim() ? searchSettings(q, ctx) : null
+  // HarmonyOS v1.2.0 design, kept: the top card is this person, not "This phone". It carries the
+  // chosen nickname and photo and opens the Personal information page (PAGES.profile). Other
+  // builds keep the upstream account card unchanged.
+  const S = useStore(s => s.S)
+  const profileName = String(S?.profileName || '').trim()
+  const profileInitial = profileName ? profileName.charAt(0).toUpperCase() : null
   // The account card: who this is, and the one line that matters about it.
-  const acct = DEMO ? { title: t('Demo'), sub: t('Example data, only in this browser.') }
-    : user ? {
-      title: user.name || t('Account'),
-      sub: sync && sync.status && sync.status !== 'ok' ? t('Sync needs a look') : MOBILE ? t('Synced with your server') : t('Account, devices and sync'),
-    }
-    : MOBILE ? { title: t('This phone'), sub: t('All data stays on this phone') }
-    : { title: t('Guest'), sub: t('Your data lives on this device. Sign in to sync.') }
+  const acct = HARMONY
+    ? { title: profileName || t('Personal information'), sub: t('Nickname, photo and body metrics') }
+    : DEMO ? { title: t('Demo'), sub: t('Example data, only in this browser.') }
+      : user ? {
+        title: user.name || t('Account'),
+        sub: sync && sync.status && sync.status !== 'ok' ? t('Sync needs a look') : MOBILE ? t('Synced with your server') : t('Account, devices and sync'),
+      }
+        : MOBILE ? { title: t('This phone'), sub: t('All data stays on this phone') }
+          : { title: t('Guest'), sub: t('Your data lives on this device. Sign in to sync.') }
+  const initial = HARMONY ? profileInitial
+    : user && !DEMO ? String(user.name || '?').trim().charAt(0).toUpperCase() : null
   // The face: one's own picture (components/Avatar.jsx), else the name's first letter, else the icon.
   const faceName = user && !DEMO ? (String(user.name || '').trim() || '?') : null
   const nav = useNavigate()
@@ -1508,11 +1518,17 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
       ))}
     </Section> : <div className="sp-empty">{t('No setting matches “{0}”.', q.trim())}</div>) : <>
       <Section>
-        <button className="lrow tap sp-acct" data-tour="settings-account" onClick={() => open('account')}>
-          <AvatarFace name={faceName} />
+        <button className="lrow tap sp-acct" data-tour="settings-account" onClick={() => open(HARMONY ? 'profile' : 'account')}>
+          {HARMONY
+            ? <span className={'sp-avatar' + (initial ? ' on' : '')} aria-hidden="true">
+              {S?.profileAvatar ? <img className="sp-avatar-img" src={S.profileAvatar} alt="" />
+                : initial || <Icon name="personCircle" />}
+            </span>
+            : <AvatarFace name={faceName} />}
           <span className="lrow-m"><span className="lrow-t">{acct.title}</span><span className="lrow-s">{acct.sub}</span></span>
-          {/* Badges pinned to the profile (lib/levels.js), from Stats → Week streak → Level. */}
-          {ctx.mod('motivation') && <PinnedBadges />}
+          {/* Badges pinned to the profile (lib/levels.js), from Stats → Week streak → Level.
+              Hidden on HarmonyOS: the 1.2.0 account-card design carries no badges. */}
+          {!HARMONY && ctx.mod('motivation') && <PinnedBadges />}
           <Icon name="chevronRight" className="lrow-c" />
         </button>
       </Section>
