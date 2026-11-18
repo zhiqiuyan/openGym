@@ -48,6 +48,9 @@ import { installViewportGuard } from './lib/viewport-guard.js'
 import { installChipDrag } from './lib/hchips.js'
 import { syncPushSubscription } from './lib/push.js'
 import { MOBILE, nativePlatform } from './lib/mobile.js'
+// The HarmonyOS edition: its shell is a single Web component, so the system's own title-bar
+// gradient blur is drawn by the page instead (components/TopBlur.jsx, index.css .top-blur).
+const HARMONY = import.meta.env.VITE_HARMONY === '1'
 import { isOn } from './lib/modules.js'
 import { useTour } from './lib/tour.js'
 import { useTourOffer } from './lib/tour-offer.js'
@@ -56,6 +59,7 @@ import { BrandMark } from './components/BrandLogo.jsx'
 import TabBar from './components/TabBar.jsx'
 import { startOrPreview, startPickerSheet } from './components/StartSheets.jsx'
 import ScrollTopButton from './components/ScrollTopButton.jsx'
+import TopBlur from './components/TopBlur.jsx'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import Modals from './components/Modals.jsx'
 import Toast from './components/Toast.jsx'
@@ -458,6 +462,11 @@ function Shell() {
           would ride along with the page for the length of it. Decides for itself when to show —
           including on the sign-in screen, when the server has just ended the session. */}
       <SyncBanner />
+      {/* The HDS title-bar gradient blur at the top of the screen: nothing at rest, the full
+          effect 120px into the scroll, so content sinking under the status bar fades into the
+          background instead of being cut by a line (components/TopBlur.jsx). HarmonyOS only:
+          the other shells draw their own status bar and never asked for it. */}
+      {HARMONY && authed && <TopBlur path={loc.pathname} />}
       {!noTabs && <TabBar onStart={startOrPreview} onPick={startPickerSheet} />}
       {!noTabs && authed && <ScrollTopButton off={loc.pathname === '/workout'} path={loc.pathname} />}
       <RestTimer />

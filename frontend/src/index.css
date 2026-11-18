@@ -774,6 +774,29 @@ h4.sec{
   .exmedia .gifhint,.exmedia .giftoggle{background:rgba(0,0,0,.8)}
 }
 
+/* ------------------------------------------ the top of the screen, scrolling -- */
+/* HDS title-bar gradient blur (components/TopBlur.jsx). Nothing at the top of the page, the full
+   effect 120px in: the same ramp as HdsNavigation's titleBar with scrollEffectType
+   GRADIENT_BLUR and blurEffectiveStartOffset 0 / blurEffectiveEndOffset 120.
+   The mask is what makes it a gradient and not a band — the frost is at full strength along the
+   status bar and has faded out before the element's bottom edge, so no line is ever drawn across
+   the content. It sits under the sticky headers (z-index 20), which keep their own glass of their
+   own, and above the page, so what slides under the bar is what gets blurred. */
+.top-blur{
+  position:fixed;top:0;inset-inline:0;height:calc(var(--sat) + 56px);z-index:8;
+  pointer-events:none;opacity:0;visibility:hidden;
+  -webkit-backdrop-filter:blur(calc(var(--tb,0) * 20px)) saturate(180%);
+  backdrop-filter:blur(calc(var(--tb,0) * 20px)) saturate(180%);
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 44%,transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 0,#000 44%,transparent 100%);
+  background:linear-gradient(to bottom,var(--bg) 0,transparent 70%);
+}
+/* Reduced transparency: the frost goes and the same gradient carries the change on its own — the
+   top of the screen still settles into the background colour instead of freezing mid-air. */
+@media (prefers-reduced-transparency: reduce){
+  .top-blur{-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+
 /* ------------------------------------------------------------ week strip -- */
 .week{display:flex;justify-content:space-between;gap:4px}
 .wday{

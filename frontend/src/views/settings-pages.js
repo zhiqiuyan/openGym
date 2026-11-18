@@ -392,7 +392,10 @@ export const SEARCH = [
   { page: 'account', title: 'Delete my account', icon: 'trash', tint: 'var(--red)', kw: 'delete remove close erase account profile gdpr', when: c => !!c.user && !c.demo },
   { page: 'account', title: 'Choose a photo', icon: 'image', tint: 'var(--acc)', kw: 'profile picture avatar photo icon face', when: c => !c.demo },
   { page: 'account', title: 'Pick an icon', icon: 'smile', tint: 'var(--orange)', kw: 'profile picture avatar icon emoji face', when: c => !c.demo },
-  { page: 'account', title: 'Badges on your profile', icon: 'medal', tint: 'var(--yellow)', mod: 'motivation', kw: 'badges pin profile medals', when: c => !c.demo },
+  { page: 'account', title: 'Badges on your profile', icon: 'medal', tint: 'var(--yellow)', mod: 'motivation', kw: 'badges pin profile medals', when: c => !c.demo && !HARMONY },
+  // HarmonyOS keeps the badges on Personal information (the Settings root card opens it, not the
+  // account page), so that is where a search has to land.
+  { page: 'profile', title: 'Badges on your profile', icon: 'medal', tint: 'var(--yellow)', mod: 'motivation', kw: 'badges pin profile medals 徽章', when: () => HARMONY },
   { page: 'account', title: 'Account ID', icon: 'personCircle', tint: 'var(--grey)', kw: 'id uid admin account', when: c => !!c.user && !c.demo },
   { page: 'account', title: 'Admin dashboard', icon: 'crown', tint: 'var(--indigo)', kw: 'admin users dashboard', when: c => !!c.user?.admin && !c.demo },
   { page: 'account', title: 'Disconnect', net: true, icon: 'signOut', tint: 'var(--red)', kw: 'disconnect server local', when: c => c.mobile && !!c.user },

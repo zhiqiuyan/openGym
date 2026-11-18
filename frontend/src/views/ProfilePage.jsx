@@ -19,13 +19,17 @@
 import React, { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Section, Row, Button, TextField } from '../components/ui.jsx'
-import { t } from '../lib/i18n.js'
+import { t, tn } from '../lib/i18n.js'
 import { useUI } from '../store/useUI.js'
 import Icon from '../components/Icon.jsx'
 import {
   bmiOf, bandOf, gaugePct, healthyRange, ageOf, bmrOf,
   toKg, fromKg, heightCm, bodyFatPct, birthYear, latestWeight,
 } from '../lib/body-metrics.js'
+import { PinnedBadges, profileBadgesSheet } from '../components/Streak.jsx'
+import { streakInfo } from '../lib/streak.js'
+import { earnedBadges, pinnedIds } from '../lib/levels.js'
+import { isOn } from '../lib/modules.js'
 
 const num = (v, fallback = '') => (v === null || v === undefined || Number.isNaN(v) ? fallback : String(v))
 const sheet = render => useUI.getState().openSheet(render)
@@ -164,6 +168,13 @@ export default function ProfilePage({ S, update }) {
 
   const name = String(S.profileName || '').trim()
   const initial = name ? name.charAt(0).toUpperCase() : null
+  // Badges (lib/levels.js): earned from streaks and monthly challenges, up to three pinned beside
+  // the picture. Until this row existed the only way in was Stats → Week streak → Level, which
+  // needs a finished workout before it is even drawn — the badges were there and nobody found them.
+  const motivationOn = isOn(S, 'motivation')
+  const badgeInfo = motivationOn ? streakInfo(S) : null
+  const pins = motivationOn ? pinnedIds(S) : []
+  const earnedCount = motivationOn ? earnedBadges(S, badgeInfo).length : 0
   const fileRef = useRef(null)
   const editName = () => sheet(close => <NameSheet value={name} onCommit={set('profileName')} close={close} />)
   const onPhoto = async e => {
@@ -187,6 +198,17 @@ export default function ProfilePage({ S, update }) {
       </button>
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={onPhoto} />
     </section>
+
+    {/* The badges this person has earned, and where they are pinned from. One row: the medals
+        themselves sit on the right, the sheet behind it lists what is earned and pins up to
+        PIN_MAX of them. Off with Settings → Modules → Motivation, like every other badge. */}
+    {motivationOn && <Section title={t('Your badges')}
+      footer={t('Badges come from streaks and monthly challenges. Pin up to {0}, and they sit beside your picture in Settings.', 3)}>
+      <Row icon="medal" iconTint="var(--yellow)" title={t('Badges on your profile')} className="hm-lrow"
+        value={pins.length ? <PinnedBadges />
+          : earnedCount ? tn('{0} badge', '{0} badges', earnedCount) : t('None yet')}
+        accessory="chevron" onClick={() => profileBadgesSheet(badgeInfo)} />
+    </Section>}
 
     <section className="hm-hero" aria-label={t('Body mass index')}>
       <div className="hm-hero-head">
@@ -213,9 +235,11 @@ export default function ProfilePage({ S, update }) {
     <Section title={t('Your details')} footer={t('Weight comes from your weigh-ins in Integrations.')}>
       <NumberRow icon="ruler" iconTint="var(--blue)" label={t('Height')} unit="cm"
         min={50} max={260} value={S.heightCm ?? null} onCommit={setHeight} />
-      {/* Not editable here: tapping goes to the one place that owns the number. */}
+      {/* Not editable here: tapping goes to the one place that owns the number. No chevron: the
+          number stands alone, the same as every other fact in this list (the arrow after it read
+          as "some number to change" and pushed the value off the line on a narrow phone). */}
       <Row icon="scale" iconTint="var(--teal)" title={t('Weight')} className="hm-lrow"
-        value={weight === null ? '—' : `${weight} ${unit}`} accessory="chevron"
+        value={weight === null ? '—' : `${weight} ${unit}`}
         onClick={() => nav('/settings/integrations')} />
       <ChoiceRow icon="personCircle" iconTint="var(--indigo)" label={t('Sex')}
         value={S.sex === 'female' || S.sex === 'male' ? S.sex : ''}
