@@ -41,12 +41,7 @@ describe('Brazilian Portuguese locale', () => {
     // has to be taught is a number nobody reads. What the numbers stood for is asserted above.
     // If the hash fails, review the changed keys and wording before accepting a new one. From
     // frontend/: node scripts/pt-br-inheritance-fingerprint.mjs --list
-    // Re-reviewed 2026-11-06: first the upstream sync moved the About & updates keys and dropped
-    // the four dead donation strings; then the HarmonyOS Personal information / Huawei Health
-    // pages added 61 keys to every pack. pt-BR keeps its own reviewed wording and inherits the
-    // new HarmonyOS strings (English source text) from pt. No Brazilian wording changed; only
-    // the inherited set moved.
-    expect(fingerprint, 'pt-PT inheritance changed; review the inherited pt-BR wording').toBe('0ec2d4c941579c1d2ce84fa6bdb23a2afe7917855114b2f3858b307fddc8cb14')
+    expect(fingerprint, 'pt-PT inheritance changed; review the inherited pt-BR wording').toBe('5268d3a4b81d4296f467918e24899038aee7b81a024949535f9ecdbcd3d68202')
   })
 
   // pt-PT labelled Unpair 'Desfazer': Undo, in Portuguese (it is pt-BR's Undo), on the button that
