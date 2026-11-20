@@ -776,8 +776,8 @@ h4.sec{
 
 /* ------------------------------------------ the top of the screen, scrolling -- */
 /* HDS title-bar gradient blur (components/TopBlur.jsx). Nothing at the top of the page, the full
-   effect 120px in: the same ramp as HdsNavigation's titleBar with scrollEffectType
-   GRADIENT_BLUR and blurEffectiveStartOffset 0 / blurEffectiveEndOffset 120.
+   effect 64px in: the same ramp as HdsNavigation's titleBar with scrollEffectType
+   GRADIENT_BLUR and blurEffectiveStartOffset 0 / blurEffectiveEndOffset 64.
    The mask is what makes it a gradient and not a band — the frost is at full strength along the
    status bar and has faded out before the element's bottom edge, so no line is ever drawn across
    the content. It sits under the sticky headers (z-index 20), which keep their own glass of their

@@ -58,9 +58,10 @@ opengym-harmony/
 
 ## 二之一、版本与发版
 
-鸿蒙版从 `1.0.0` 起有独立的 semver 版本线，与上游 Android / Web / iOS 无关。
-`AppScope/app.json5` 是**唯一版本来源**：`versionName` 显示给用户，`versionCode` 每版 +1
-（鸿蒙要求严格递增才能覆盖安装），`buildVersion` 每版 +1。`tools/sync-web.mjs` 把
+鸿蒙版在 `1.0.0`–`1.3.0` 期间用独立版本线；**从 `1.4.5` 起 `versionName` 与上游 openGym 对齐**
+（同步哪版上游就用哪个版本号）。`AppScope/app.json5` 是**唯一版本来源**：`versionName`
+显示给用户，`versionCode` 沿用鸿蒙版自有序列、每版 +1（鸿蒙要求严格递增才能覆盖安装，
+故不与 Android 的 versionCode 共用数字），`buildVersion` 每版 +1。`tools/sync-web.mjs` 把
 `versionName` 传给前端，`vite.config.js` 也会在缺少环境变量时直接读这份清单，所以「设置里
 显示的版本」和「安装包版本」不会各说各话。
 
@@ -102,7 +103,7 @@ DevEco Studio 里点运行最省事。但如果要脚本化出包，注意三个
 ```bash
 # 1. 工程路径必须是纯 ASCII
 #    hvigor 会把 C:\Users\<中文用户名> 按错误编码读成乱码，工程路径含中文时
-#    hvigorw.bat 的参数也会乱。先复制到 D:\ogsrc 这样的纯 ASCII 路径再编译。
+#    hvigorw.bat 的参数也会乱。先复制到 C:\ogsrc 这样的纯 ASCII 路径再编译。
 
 # 2. HOME 指向纯 ASCII 路径，让 hvigor 缓存不落在中文用户目录下
 export JAVA_HOME="C:/Program Files/Huawei/DevEco Studio/jbr"

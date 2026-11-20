@@ -34,7 +34,19 @@ const opt = (name, fallback) => {
   const i = args.indexOf(name)
   return i >= 0 && args[i + 1] ? args[i + 1] : fallback
 }
-const FRONTEND = path.resolve(opt('--frontend', path.join(ROOT, '..', 'openGym', 'frontend')))
+// The project can live either beside frontend/ (checked into the openGym repo) or beside the
+// openGym repo itself (standalone build tree). Pick whichever layout actually has frontend/src
+// instead of assuming one — the 2026-11-19 move to C:/HUAWEI/openGym changed the depth.
+const FRONTEND = (() => {
+  const explicit = opt('--frontend', null)
+  if (explicit) return path.resolve(explicit)
+  const candidates = [
+    path.join(ROOT, '..', 'frontend'),
+    path.join(ROOT, '..', 'openGym', 'frontend'),
+    path.join(ROOT, '..', '..', 'openGym', 'frontend'),
+  ]
+  return path.resolve(candidates.find(p => fs.existsSync(path.join(p, 'src'))) ?? candidates[1])
+})()
 
 const errors = []
 const warnings = []
@@ -396,7 +408,10 @@ const KNOWN_KITS = [
   '@kit.ArkWeb', '@kit.AbilityKit', '@kit.BasicServicesKit', '@kit.NetworkKit',
   '@kit.ArkData', '@kit.NotificationKit', '@kit.LocationKit', '@kit.ScanKit',
   '@kit.CoreFileKit', '@kit.PerformanceAnalysisKit', '@kit.ArkUI',
-  '@kit.LocalizationKit'
+  '@kit.LocalizationKit',
+  // Health Service Kit (HUAWEI 运动健康) and Connectivity Kit (BLE scale), both used by the
+  // HarmonyOS-only plugins and both shipped since 1.1.0/1.2.0.
+  '@kit.HealthServiceKit', '@kit.ConnectivityKit'
 ]
 // The modules that are imported by their own path rather than through a kit.
 const KNOWN_MODULES = ['@ohos.app.ability.common']
@@ -443,8 +458,10 @@ for (const file of etsFiles) {
   if (/:\s*bool\b/.test(src)) fail(`${rel} 用了 bool，ArkTS 里是 boolean`)
   // `any` is reserved in ArkTS.
   if (/:\s*any\b|<any>|\bany\[\]/.test(src)) fail(`${rel} 用了 any，ArkTS 不允许`)
-  // A function type is not a type in ArkTS.
-  if (/:\s*\(\s*\w+\s*:\s*\w+[^)]*\)\s*=>\s*\w+/.test(src)) {
+  // A function type returning a value is not a type in ArkTS; use an interface. Callback
+  // signatures ending in `=> void` are legal (they are used throughout the BLE scale plugin),
+  // so only flag a named return type here.
+  if (/:\s*\([^)]*\)\s*=>\s*(?!void\b)\w+/.test(src)) {
     fail(`${rel} 用了函数类型标注，ArkTS 需要一个 interface`)
   }
   // Object literals need a type in ArkTS.

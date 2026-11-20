@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/openGym/frontend/src';
+const ROOT = 'C:/HUAWEI/openGym/openGym/frontend/src';
 
 function load(file) {
   const src = fs.readFileSync(file, 'utf8');

@@ -2,9 +2,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const HERE = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/opengym-harmony/tools';
+const HERE = 'C:/HUAWEI/openGym/opengym-harmony/tools';
 const OUT = path.join(HERE, 'zh-batches');
-const DICT = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/openGym/catalogue/i18n-dictionaries';
+const DICT = 'C:/HUAWEI/openGym/openGym/catalogue/i18n-dictionaries';
 
 fs.mkdirSync(OUT, { recursive: true });
 // 清空旧分片，避免上一轮的残留混进本轮

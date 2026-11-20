@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/openGym/frontend/src/instr';
+const ROOT = 'C:/HUAWEI/openGym/openGym/frontend/src/instr';
 const load = (f) => new Function(fs.readFileSync(path.join(ROOT, f), 'utf8').replace('export default', 'return '))();
 const hasCJK = (s) => /[\u4e00-\u9fff]/.test(s);
 const isEnglish = (s) => typeof s === 'string' && !hasCJK(s) && /[A-Za-z]{3}/.test(s);
@@ -83,12 +83,12 @@ for (const s of missingUnique) if (!best(zhMap, s) && !best(twMap, s)) needNew.a
 console.log(`\n=== 合计需新译的唯一英文句: ${needNew.size} ===`);
 
 fs.writeFileSync(
-  path.join('d:/文档/WorkBuddy/2026-10-28-14-27-47/opengym-harmony/tools', 'need-new-translation.json'),
+  path.join('C:/HUAWEI/openGym/opengym-harmony/tools', 'need-new-translation.json'),
   JSON.stringify([...needNew].sort(), null, 2),
   'utf8'
 );
 fs.writeFileSync(
-  path.join('d:/文档/WorkBuddy/2026-10-28-14-27-47/opengym-harmony/tools', 'pending-slots.json'),
+  path.join('C:/HUAWEI/openGym/opengym-harmony/tools', 'pending-slots.json'),
   JSON.stringify(pending, null, 0),
   'utf8'
 );

@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const ROOT = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/openGym/catalogue';
+const ROOT = 'C:/HUAWEI/openGym/openGym/catalogue';
 const pack = JSON.parse(fs.readFileSync(path.join(ROOT, 'i18n/zh.json'), 'utf8'));
 const DICT = path.join(ROOT, 'i18n-dictionaries');
 
@@ -105,7 +105,7 @@ console.log(`需新译唯一描述   : ${needNewDesc.size}`);
 
 console.log(`\n=== 合计需新译唯一英文 : ${needNewSteps.size + needNewDesc.size} 句 ===`);
 
-const OUT = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/opengym-harmony/tools';
+const OUT = 'C:/HUAWEI/openGym/opengym-harmony/tools';
 fs.writeFileSync(path.join(OUT, 'need-new-steps.json'), JSON.stringify([...needNewSteps].sort(), null, 2), 'utf8');
 fs.writeFileSync(path.join(OUT, 'need-new-desc.json'), JSON.stringify([...needNewDesc].sort(), null, 2), 'utf8');
 console.log('已导出 need-new-steps.json / need-new-desc.json');

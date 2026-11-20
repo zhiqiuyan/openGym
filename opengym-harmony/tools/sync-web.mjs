@@ -13,7 +13,8 @@
  *   node tools/sync-web.mjs --no-media   sync without the exercise media (small build)
  *   node tools/sync-web.mjs --watch      rebuild on every change
  *
- * The front end lives in the openGym checkout next to this project (../openGym by default).
+ * The front end is located automatically: either ../frontend (this project checked into the
+ * openGym repo) or ../openGym/frontend (standalone build tree beside the repo).
  * Point somewhere else with --frontend <path>.
  */
 
@@ -33,7 +34,18 @@ const opt = (name, fallback) => {
   return i >= 0 && args[i + 1] ? args[i + 1] : fallback
 }
 
-const FRONTEND = path.resolve(opt('--frontend', path.join(ROOT, '..', 'openGym', 'frontend')))
+const FRONTEND = (() => {
+  const explicit = opt('--frontend', null)
+  if (explicit) return path.resolve(explicit)
+  // Works both inside the openGym checkout (../frontend) and as a standalone build tree
+  // beside it (../openGym/frontend). The 2026-11-19 move changed which one applies.
+  const candidates = [
+    path.join(ROOT, '..', 'frontend'),
+    path.join(ROOT, '..', 'openGym', 'frontend'),
+    path.join(ROOT, '..', '..', 'openGym', 'frontend'),
+  ]
+  return path.resolve(candidates.find(p => fs.existsSync(path.join(p, 'src'))) ?? candidates[1])
+})()
 const DIST = path.join(FRONTEND, 'dist')
 const NO_BUILD = flag('--no-build')
 const WATCH = flag('--watch')

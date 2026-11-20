@@ -8,9 +8,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const HERE = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/opengym-harmony/tools';
+const HERE = 'C:/HUAWEI/openGym/opengym-harmony/tools';
 const BATCH = path.join(HERE, 'zh-batches');
-const CAT = 'd:/文档/WorkBuddy/2026-10-28-14-27-47/openGym/catalogue';
+const CAT = 'C:/HUAWEI/openGym/openGym/catalogue';
 const I18N = path.join(CAT, 'i18n/zh.json');
 const DICT = path.join(CAT, 'i18n-dictionaries');
 const check = process.argv.includes('--check');

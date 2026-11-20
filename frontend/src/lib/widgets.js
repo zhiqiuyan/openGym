@@ -232,6 +232,25 @@ export function buildWidgetSnapshot (S, { today = todayISO() } = {}) {
     accent: pair?.accent || '#a3e635',
     ink: pair?.ink || '#0c0e12',
     days,
+    // HarmonyOS 桌面卡片：本周（周一至周日）每天的训练情况，热力图一格一天。days 是从今天
+    // 回推的滚动窗口、会跨过周界，所以这里从 weekFrom 起取满 7 天才是真正的"本周"。每格：
+    // trained 当天是否有训练记录、volume 当天训练总量（kg，按 profile 单位）、isToday / future
+    // 让卡片把"今天"标出来、把还没到的日子留灰。
+    heatmap: (() => {
+      try {
+        const out = []
+        for (let i = 0; i < 7; i++) {
+          const iso = shift(weekFrom, i)
+          const wods = (st.workouts || []).filter(w => w && w.d === iso)
+          let volume = 0
+          for (const w of wods) { try { volume += Math.round(sessionVolume(w) || 0) } catch { /* a set it cannot read */ } }
+          // The weekday's shortest form ("一" … "日" in Chinese), ready for the card to draw.
+          const label = new Date(iso + 'T12:00:00').toLocaleDateString(dateLocale(), { weekday: 'narrow' })
+          out.push({ iso, label, trained: wods.length > 0, volume, isToday: iso === today, future: iso > today })
+        }
+        return out
+      } catch { return null }
+    })(),
     week: { done: week.done || 0, planned: week.planned || 0 },
     // v1.4.5 (#753): what is left of the week's plan, { left, of }, or null with no plan (a
     // rotation without a weekly target). The native widgets do not read it yet.

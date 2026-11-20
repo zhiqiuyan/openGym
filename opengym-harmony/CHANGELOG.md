@@ -1,20 +1,30 @@
 # 鸿蒙版版本记录
 
-版本号遵循 semver，与 Android / Web / iOS 的版本线完全独立。`AppScope/app.json5` 是唯一来源：
-`versionName` 显示给用户，`versionCode` 每版 +1（覆盖安装要求严格递增），`buildVersion` 每版 +1。
+版本号从 1.4.5 起与上游 openGym 的 `versionName` 对齐（此前 1.0.0–1.3.0 为独立版本线）。
+`AppScope/app.json5` 是唯一来源：`versionName` 显示给用户并与上游同步，`versionCode` 沿用鸿蒙版
+自有序列、每版 +1（覆盖安装要求严格递增，故不与 Android 的 versionCode 共用数字），
+`buildVersion` 每版 +1。
 
 每次发版：`node tools/bump-version.mjs <patch|minor|major> --note "..."` → `node tools/sync-web.mjs`
 → `assembleHap` → 新建 tag `harmony-v<版本>` 与独立 Release（**不要覆盖已有 Release 的附件**）。
 Release 附件名带版本号，另附 `.sha256` 与 `SHA256SUMS`。`/releases/latest` 始终指向最新版，
 应用内「检查更新」与仓库 README 都用这个地址，发新版无需改代码。
 
-## 1.2.0 (2026-11-16)
+## 1.4.5 (2026-11-18)
 
-- 集成蓝牙体重秤：扫描并连接真实蓝牙秤直读体重（小米/云麦/体知/香山/三诺等广播型协议），同时保留手动填写；集成页「本机」新增「蓝牙体重秤」入口，含中文文案与浅色/深色适配。原生新增 `BleScalePlugin` 与完整协议栈（`ScaleBluetoothService` / `ProtocolRegistry` / 8 个厂商适配器），并声明 `ACCESS_BLUETOOTH` 权限
-- 蓝牙图标改用华为官方图标素材 `ohos_ic_public_device_bluetooth_filled`（对应 `sys.symbol.bluetooth`），原件存于 `frontend/src/assets/harmony-symbols/`；前端运行于 ArkWeb，故取官方矢量轮廓接入现有 SVG 图标体系而非 `SymbolGlyph`
-- 设置页：AI 教练只保留一级菜单入口，集成页不再出现重复卡片；「我的」页基本信息与派生指标的值文字颜色统一（`--label-2`），体重改为只读引用集成模块的称重历史，点击直达集成页
-- 华为运动健康：授权失败与用户拒绝授权分开归因，明确提示「没有完成 Health Kit 配置」；同步范围收敛为**仅锻炼记录**（基础数据权限，个人开发者可申请），体重保留在 openGym 本地。原生 `status()` / `requestPermissions()` 只请求 `WORKOUT` 写权限，`write()` 隔离体重与训练写入，并修正 `remove()` 从未删除锻炼记录的缺陷
-- 完整原生重编译：新 ArkTS 字节码与网页资源一并编入 HAP，`ets/modules.abc` 含 `BleScalePlugin` 与新的 Health Kit 逻辑
+- 版本号从本版起对齐上游 openGym（此前鸿蒙版用独立版本线 1.0.0–1.3.0）
+- 同步上游 v1.4.5 全部功能：循环训练（Circuit/AMRAP/EMOM/Tabata）、分享卡片、语音提示、每日问卷/日志、进度照片对比、计划导入导出（实况窗为上游功能，鸿蒙版未落地，见下）
+- 补齐蓝牙体重秤 Scale 插件的 Web 端 shim，两端插件表对齐
+- 个人信息页新增「徽章」区：右侧直接显示已固定的徽章（未固定时显示已得数量），点开可固定最多 3 枚；此前只有「统计 → 连续周 → 等级」一处入口，且没有训练记录时根本不绘制，等于找不到
+- 个人信息页「体重」数值后不再带右箭头，与身高、出生年等字段的排版一致（点按仍进「集成」）
+- 顶部渐变模糊（HDS 标题栏效果）：页面上滑时状态栏下方的内容渐次虚化并沉入背景，静止时无效果、滚动 64vp 达到满值，与 `HdsNavigation` 的 `titleBar.scrollEffectOpts`（`GRADIENT_BLUR`，`blurEffectiveStartOffset 0` / `blurEffectiveEndOffset 64`）同一条曲线；原生壳是一个 Web 组件，滚动发生在其内部，故由页面侧 `components/TopBlur.jsx` 实现
+- 包体瘦身：清掉历次构建遗留的哈希命名 chunk，HAP 由 284 MB 降至 246 MB（动作媒体 13109 个文件未动）
+- 桌面卡片（Form Kit）：r8 曾以 `WorkoutCardFormAbility` / `WidgetBridge` 接入 2×2 本周热力图。2026-11-20 用户拍板删除：原生 Form 扩展、卡片页面、快照存储与 Web shim 已全部移除；上游 `lib/widgets.js` / `widget-logger.js` 是 iOS/Android 共用代码（鸿蒙平台本就返回 null），保持不变
+- 实况窗（Live View Kit）：r8 曾以 `LiveActivityPlugin` 接入 `WORKOUT` 场景，前置条件是 AGC 开通 Live View Kit 并申请 WORKOUT 场景权限。2026-11-20 用户拍板删除：未开通权限时该能力恒为降级态，不产生用户价值。原生插件 / 注册 / Web shim / Kit 白名单已全部移除；上游 `lib/live-activity.js` 是本版训练状态快照的公共代码（在鸿蒙平台本就返回 null），保持不变；桌面卡片亦于同日按用户决定删除
+
+## 1.2.0 (2026-11-13)
+
+- 集成蓝牙体重秤：扫描并连接真实蓝牙秤直读体重（小米/云麦/体知/香山/三诺等广播型协议），同时保留手动填写；集成页「本机」新增「蓝牙体重秤」入口，含中文文案与浅色/深色适配
 
 ## 1.1.1 (2026-11-09)
 
